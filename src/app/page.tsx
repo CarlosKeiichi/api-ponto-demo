@@ -7,10 +7,10 @@ import {
   gerarMarcacoesDoDia,
   type Turno,
 } from "@/lib/dados";
-import { TOKEN } from "@/lib/auth";
+import { CREDENCIAIS } from "@/lib/auth";
 
 const BASE_URL = "https://SEU-DOMINIO";
-const DATA_EXEMPLO = "2026-11-20";
+const DATA_EXEMPLO = "2026-11-04";
 
 const NOME_TURNO: Record<Turno, string> = {
   almoco: "Almoço",
@@ -21,7 +21,7 @@ const NOME_TURNO: Record<Turno, string> = {
 function Curl({ caminho }: { caminho: string }) {
   return (
     <pre>
-      <code>{`curl -H "Authorization: Bearer ${TOKEN}" \\\n  "${BASE_URL}${caminho}"`}</code>
+      <code>{`curl -H "X-Client-Id: ${CREDENCIAIS.clientId}" \\\n  -H "X-Api-Key: ${CREDENCIAIS.apiKey}" \\\n  -H "Authorization: Bearer ${CREDENCIAIS.apiSecret}" \\\n  "${BASE_URL}${caminho}"`}</code>
     </pre>
   );
 }
@@ -61,15 +61,43 @@ export default function Pagina() {
         todo mundo na aula vê os mesmos números.
       </p>
 
-      <h2>Autenticação</h2>
+      <h2>Autenticação: três credenciais</h2>
       <p>
-        Todas as rotas em <code>/api</code> exigem o cabeçalho abaixo. Sem ele, ou com token
-        errado, a resposta é <code>401</code> com o corpo{" "}
-        <code>{`{"erro":"Token inválido"}`}</code>.
+        Como num fornecedor de verdade, o acesso usa três credenciais. Todas são fictícias e
+        servem só para a aula.
       </p>
+      <dl>
+        <dt>
+          <code>Client ID</code>
+        </dt>
+        <dd>
+          Identifica a conta: qual restaurante está pedindo os dados. Vai no cabeçalho{" "}
+          <code>X-Client-Id</code>. Valor: <code>{CREDENCIAIS.clientId}</code>
+        </dd>
+        <dt>
+          <code>API Key</code>
+        </dt>
+        <dd>
+          Identifica o aplicativo que está chamando (identificação pública). Vai no cabeçalho{" "}
+          <code>X-Api-Key</code>. Valor: <code>{CREDENCIAIS.apiKey}</code>
+        </dd>
+        <dt>
+          <code>API Secret</code>
+        </dt>
+        <dd>
+          A senha desse aplicativo. Fica só no servidor, nunca no navegador. Vai em{" "}
+          <code>Authorization: Bearer</code>. Valor: <code>{CREDENCIAIS.apiSecret}</code>
+        </dd>
+      </dl>
       <pre>
-        <code>{`Authorization: Bearer ${TOKEN}`}</code>
+        <code>{`X-Client-Id: ${CREDENCIAIS.clientId}\nX-Api-Key: ${CREDENCIAIS.apiKey}\nAuthorization: Bearer ${CREDENCIAIS.apiSecret}`}</code>
       </pre>
+      <p>
+        Se uma credencial faltar ou estiver errada, a resposta é <code>401</code> e o corpo diz
+        qual foi, por exemplo <code>{`{"erro":"X-Api-Key inválida"}`}</code>. Muitos fornecedores
+        trocam Client ID e Secret por um token temporário antes de cada chamada; isso é detalhe do
+        adaptador, o resto do sistema não muda.
+      </p>
       <p>
         As respostas liberam CORS (<code>Access-Control-Allow-Origin: *</code>), então dá para
         chamar direto do navegador, de planilhas, do n8n ou de qualquer ferramenta.

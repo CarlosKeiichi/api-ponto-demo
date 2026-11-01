@@ -5,12 +5,12 @@ import {
   gerarMarcacoesDoDia,
   gerarMarcacoesDoPeriodo,
 } from "@/lib/dados";
-import { responderJson, responderOptions, verificarToken } from "@/lib/auth";
+import { responderJson, responderOptions, verificarCredenciais } from "@/lib/auth";
 
 const PERIODO_MAXIMO_DIAS = 31;
 
 export async function GET(request: NextRequest) {
-  const naoAutorizado = verificarToken(request);
+  const naoAutorizado = verificarCredenciais(request);
   if (naoAutorizado) return naoAutorizado;
 
   const params = request.nextUrl.searchParams;

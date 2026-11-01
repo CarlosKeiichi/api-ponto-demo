@@ -1,8 +1,8 @@
 import { FUNCIONARIOS } from "@/lib/dados";
-import { responderJson, responderOptions, verificarToken } from "@/lib/auth";
+import { responderJson, responderOptions, verificarCredenciais } from "@/lib/auth";
 
 export async function GET(request: Request) {
-  const naoAutorizado = verificarToken(request);
+  const naoAutorizado = verificarCredenciais(request);
   if (naoAutorizado) return naoAutorizado;
 
   return responderJson(FUNCIONARIOS);

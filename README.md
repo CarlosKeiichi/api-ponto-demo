@@ -33,15 +33,23 @@ npm run start
 
 ## Autenticação
 
-Todas as rotas em `/api` exigem o cabeçalho:
+Como num fornecedor de verdade, todas as rotas em `/api` exigem três credenciais (fictícias, só para a aula):
+
+| Credencial | O que identifica | Onde vai | Valor |
+| --- | --- | --- | --- |
+| Client ID | A conta (qual restaurante) | cabeçalho `X-Client-Id` | `vila-tempero` |
+| API Key | O aplicativo que chama (identificação pública) | cabeçalho `X-Api-Key` | `vt_key_aulao2026` |
+| API Secret | A senha do aplicativo (só no servidor) | `Authorization: Bearer` | `vt_secret_7f3a9c2e` |
 
 ```
-Authorization: Bearer DEMO-AULAO-2026
+X-Client-Id: vila-tempero
+X-Api-Key: vt_key_aulao2026
+Authorization: Bearer vt_secret_7f3a9c2e
 ```
 
-Sem o cabeçalho, ou com token errado, a resposta é `401` com o corpo `{"erro":"Token inválido"}`.
+Se uma credencial faltar ou estiver errada, a resposta é `401` e o corpo diz qual foi, por exemplo `{"erro":"X-Api-Key inválida"}`.
 
-Todas as respostas da API liberam CORS (`Access-Control-Allow-Origin: *`, métodos GET e OPTIONS, cabeçalho Authorization), então dá para chamar direto do navegador, de planilhas, do n8n ou de qualquer ferramenta.
+Todas as respostas da API liberam CORS (`Access-Control-Allow-Origin: *`, métodos GET e OPTIONS, cabeçalhos Authorization, X-Client-Id e X-Api-Key), então dá para chamar direto do navegador, de planilhas, do n8n ou de qualquer ferramenta.
 
 ## Endpoints
 
@@ -50,7 +58,8 @@ Todas as respostas da API liberam CORS (`Access-Control-Allow-Origin: *`, métod
 Lista os 8 funcionários.
 
 ```bash
-curl -H "Authorization: Bearer DEMO-AULAO-2026" \
+curl -H "X-Client-Id: vila-tempero" -H "X-Api-Key: vt_key_aulao2026" \
+  -H "Authorization: Bearer vt_secret_7f3a9c2e" \
   "https://SEU-DOMINIO/api/funcionarios"
 ```
 
@@ -83,10 +92,12 @@ Marcações de ponto de um dia ou de um período.
 - `?inicio=YYYY-MM-DD&fim=YYYY-MM-DD`: período inclusivo, no máximo 31 dias.
 
 ```bash
-curl -H "Authorization: Bearer DEMO-AULAO-2026" \
-  "https://SEU-DOMINIO/api/marcacoes?data=2026-11-20"
+curl -H "X-Client-Id: vila-tempero" -H "X-Api-Key: vt_key_aulao2026" \
+  -H "Authorization: Bearer vt_secret_7f3a9c2e" \
+  "https://SEU-DOMINIO/api/marcacoes?data=2026-11-04"
 
-curl -H "Authorization: Bearer DEMO-AULAO-2026" \
+curl -H "X-Client-Id: vila-tempero" -H "X-Api-Key: vt_key_aulao2026" \
+  -H "Authorization: Bearer vt_secret_7f3a9c2e" \
   "https://SEU-DOMINIO/api/marcacoes?inicio=2026-11-01&fim=2026-11-30"
 ```
 
@@ -176,7 +187,7 @@ Todos os outros registros ficam dentro de 5 minutos do horário planejado.
 ## Estrutura do código
 
 - `src/lib/dados.ts`: funcionários, escala semanal e gerador determinístico das marcações (funções puras, sem I/O).
-- `src/lib/auth.ts`: verificação do token e cabeçalhos CORS.
+- `src/lib/auth.ts`: verificação das três credenciais e cabeçalhos CORS.
 - `src/app/api/funcionarios/route.ts`: rota GET /api/funcionarios.
 - `src/app/api/marcacoes/route.ts`: rota GET /api/marcacoes.
 - `src/app/page.tsx`: página inicial com a documentação.
