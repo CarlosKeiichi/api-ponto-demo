@@ -25,6 +25,8 @@ const SENHA_AULA = process.env.AJUDA_SENHA ?? "oficina-0411";
 const LIMITE_HORA = Number(process.env.AJUDA_LIMITE_HORA ?? 30);
 const TAMANHO_MAXIMO_PERGUNTA = 2500;
 const HISTORICO_MAXIMO = 8;
+const TAMANHO_MAXIMO_IMAGEM = 3_000_000; // base64, ~2 MB de imagem
+const TIPOS_IMAGEM = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
 const INSTRUCOES = `Você é o monitor virtual da "Oficina de IA · Do problema à solução", uma aula de uma tarde em que donos de restaurante constroem um sistema de escala de funcionários com IA. Quem pergunta é um aluno, dono de restaurante, sem formação técnica, no meio da aula, com pressa.
 
@@ -32,6 +34,7 @@ Como responder:
 - Português do Brasil, direto, sem jargão. No máximo 8 linhas. Procedimento vira lista numerada curta.
 - Nomeie botões e menus exatamente como aparecem na tela (em inglês quando a tela é em inglês: Create repository, Deploy, Continue with GitHub).
 - Se a pessoa colar um erro, diga em uma frase qual é a causa provável, em qual peça ou entrega ela está, e o que clicar ou colar em seguida.
+- Se vier um print de tela, comece dizendo em uma frase o que você vê (qual ferramenta, qual tela, qual mensagem) e então oriente o próximo clique. Se o print não der para ler, peça outro mais de perto.
 - Use só o que está no contexto da aula abaixo. Se a dúvida sair do roteiro ou você não tiver certeza, diga isso em uma frase e oriente: "levante a mão que o Carlos vai até você".
 - Lembre as regras da cota quando fizer sentido: uma correção por mensagem na IA, com o erro colado inteiro; duas correções sem resolver, levante a mão; ninguém mexe no esforço nem no modelo.
 - Nunca peça nem repita chaves, senhas ou tokens. Se a pessoa colar uma Secret key, avise para não compartilhar e siga sem ela.
@@ -42,6 +45,8 @@ Contexto da aula:
 ${CONTEXTO_AULA}`;
 
 type Mensagem = { papel: "aluno" | "monitor"; texto: string };
+type Imagem = { tipo: string; base64: string };
+type Bloco = { type: "text"; text: string } | { type: "image"; source: { type: "base64"; media_type: string; data: string } };
 
 function json(corpo: unknown, status = 200): Response {
   return new Response(JSON.stringify(corpo), {
@@ -83,7 +88,7 @@ export async function POST(request: Request) {
     return json({ erro: "Muitas perguntas seguidas. Espere um pouco ou levante a mão." }, 429);
   }
 
-  let corpo: { pergunta?: string; etapa?: string; historico?: Mensagem[] } = {};
+  let corpo: { pergunta?: string; etapa?: string; historico?: Mensagem[]; imagem?: Imagem } = {};
   try {
     corpo = await request.json();
   } catch {
@@ -91,7 +96,17 @@ export async function POST(request: Request) {
   }
 
   const pergunta = (corpo.pergunta ?? "").toString().trim().slice(0, TAMANHO_MAXIMO_PERGUNTA);
-  if (!pergunta) return json({ erro: "Escreva a dúvida ou cole o erro." }, 400);
+
+  let imagem: Imagem | null = null;
+  if (corpo.imagem && typeof corpo.imagem.base64 === "string" && typeof corpo.imagem.tipo === "string") {
+    const tipo = corpo.imagem.tipo.toLowerCase();
+    const base64 = corpo.imagem.base64.replace(/^data:[^,]+,/, "");
+    if (!TIPOS_IMAGEM.has(tipo)) return json({ erro: "Mande o print em JPG, PNG ou WebP." }, 400);
+    if (base64.length > TAMANHO_MAXIMO_IMAGEM) return json({ erro: "O print está grande demais. Tire um print só da parte do erro." }, 400);
+    imagem = { tipo, base64 };
+  }
+
+  if (!pergunta && !imagem) return json({ erro: "Escreva a dúvida, cole o erro ou anexe um print." }, 400);
 
   const etapa = (corpo.etapa ?? "").toString().trim().slice(0, 80);
   const historico = Array.isArray(corpo.historico)
@@ -100,23 +115,25 @@ export async function POST(request: Request) {
         .slice(-HISTORICO_MAXIMO)
     : [];
 
-  const mensagens = [
+  const textoAtual = etapa ? `[Etapa em que estou: ${etapa}]\n${pergunta || "Veja o print."}` : pergunta || "Veja o print.";
+  const blocosAtuais: Bloco[] = [];
+  if (imagem) blocosAtuais.push({ type: "image", source: { type: "base64", media_type: imagem.tipo, data: imagem.base64 } });
+  blocosAtuais.push({ type: "text", text: textoAtual });
+
+  const mensagens: { role: string; content: Bloco[] }[] = [
     ...historico.map((m) => ({
       role: m.papel === "aluno" ? "user" : "assistant",
-      content: m.texto.slice(0, TAMANHO_MAXIMO_PERGUNTA),
+      content: [{ type: "text", text: m.texto.slice(0, TAMANHO_MAXIMO_PERGUNTA) } as Bloco],
     })),
-    {
-      role: "user",
-      content: etapa ? `[Etapa em que estou: ${etapa}]\n${pergunta}` : pergunta,
-    },
+    { role: "user", content: blocosAtuais },
   ];
 
   // Mensagens precisam alternar; se o histórico terminou em "aluno", junta com a pergunta atual.
-  const alternadas: { role: string; content: string }[] = [];
+  const alternadas: { role: string; content: Bloco[] }[] = [];
   for (const m of mensagens) {
     const ultima = alternadas[alternadas.length - 1];
-    if (ultima && ultima.role === m.role) ultima.content += "\n\n" + m.content;
-    else alternadas.push({ ...m });
+    if (ultima && ultima.role === m.role) ultima.content = [...ultima.content, ...m.content];
+    else alternadas.push({ role: m.role, content: [...m.content] });
   }
   if (alternadas[0]?.role !== "user") alternadas.shift();
 
@@ -130,7 +147,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         model: MODELO,
-        max_tokens: 700,
+        max_tokens: 800,
         system: INSTRUCOES,
         messages: alternadas,
       }),

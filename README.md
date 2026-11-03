@@ -208,4 +208,4 @@ Variáveis de ambiente na Vercel:
 
 Depois de criar a variável, faça um Redeploy. Pedido: `POST /api/ajuda` com cabeçalho `X-Aula` e corpo
 `{"pergunta": "...", "etapa": "Peça 3", "historico": [{"papel":"aluno","texto":"..."},{"papel":"monitor","texto":"..."}]}`.
-Resposta: `{"resposta": "..."}`. Para desligar depois da aula, apague a `ANTHROPIC_API_KEY` na Vercel.
+Opcional: `"imagem": {"tipo": "image/jpeg", "base64": "..."}` com um print do erro (até ~2 MB). Resposta: `{"resposta": "..."}`. Para desligar depois da aula, apague a `ANTHROPIC_API_KEY` na Vercel.
