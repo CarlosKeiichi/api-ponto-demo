@@ -166,8 +166,15 @@ export async function POST(request: Request) {
       .join("\n")
       .trim();
 
-    if (!texto) console.error("Resposta sem texto", JSON.stringify(dados).slice(0, 800));
-    return json({ resposta: texto || "Não consegui responder. Levante a mão." });
+    if (!texto) {
+      console.error("Resposta sem texto", JSON.stringify(dados).slice(0, 800));
+      return json({
+        resposta: "Não consegui responder. Levante a mão.",
+        motivo: dados.stop_reason ?? null,
+        tipos: (dados.content ?? []).map((b) => b.type),
+      });
+    }
+    return json({ resposta: texto });
   } catch (erro) {
     console.error("Falha ao chamar a Anthropic", erro);
     return json({ erro: "O monitor virtual está fora do ar. Levante a mão." }, 502);
