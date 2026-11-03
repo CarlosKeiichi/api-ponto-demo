@@ -191,3 +191,21 @@ Todos os outros registros ficam dentro de 5 minutos do horário planejado.
 - `src/app/api/funcionarios/route.ts`: rota GET /api/funcionarios.
 - `src/app/api/marcacoes/route.ts`: rota GET /api/marcacoes.
 - `src/app/page.tsx`: página inicial com a documentação.
+
+## Monitor virtual da aula (`/api/ajuda`)
+
+Rota usada pela página de apoio da oficina: recebe a dúvida do aluno e responde com a API da Anthropic,
+usando o contexto da aula em `src/lib/aula-contexto.ts`. A chave fica só no servidor.
+
+Variáveis de ambiente na Vercel:
+
+| Variável | Obrigatória | Para quê |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | sim | chave da conta Anthropic (console.anthropic.com) |
+| `AJUDA_MODELO` | não | modelo; padrão `claude-sonnet-5-5` |
+| `AJUDA_SENHA` | não | valor esperado no cabeçalho `X-Aula`; padrão `oficina-0411` |
+| `AJUDA_LIMITE_HORA` | não | pedidos por IP por hora; padrão 30 |
+
+Depois de criar a variável, faça um Redeploy. Pedido: `POST /api/ajuda` com cabeçalho `X-Aula` e corpo
+`{"pergunta": "...", "etapa": "Peça 3", "historico": [{"papel":"aluno","texto":"..."},{"papel":"monitor","texto":"..."}]}`.
+Resposta: `{"resposta": "..."}`. Para desligar depois da aula, apague a `ANTHROPIC_API_KEY` na Vercel.
