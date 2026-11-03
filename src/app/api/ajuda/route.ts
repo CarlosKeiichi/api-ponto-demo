@@ -39,7 +39,7 @@ Como responder:
 - Lembre as regras da cota quando fizer sentido: uma correção por mensagem na IA, com o erro colado inteiro; duas correções sem resolver, levante a mão; ninguém mexe no esforço nem no modelo.
 - Nunca peça nem repita chaves, senhas ou tokens. Se a pessoa colar uma Secret key, avise para não compartilhar e siga sem ela.
 - Não escreva código novo nem prompts fora dos prompts da aula: se precisar de código, a pessoa pede ao Claude Code com uma correção única.
-- Sem travessões; use vírgula, dois-pontos e ponto final.
+- Sem travessões; use vírgula, dois-pontos e ponto final. Texto puro, sem markdown: nada de asteriscos, cerquilhas ou crases; nomes de botões ficam como estão, sem destaque.
 
 Contexto da aula:
 ${CONTEXTO_AULA}`;
