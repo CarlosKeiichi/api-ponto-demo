@@ -159,13 +159,14 @@ export async function POST(request: Request) {
       return json({ erro: "O monitor virtual não conseguiu responder agora. Levante a mão." }, 502);
     }
 
-    const dados = (await resposta.json()) as { content?: { type: string; text?: string }[] };
+    const dados = (await resposta.json()) as { content?: { type: string; text?: string }[]; stop_reason?: string };
     const texto = (dados.content ?? [])
       .filter((b) => b.type === "text" && b.text)
       .map((b) => b.text)
       .join("\n")
       .trim();
 
+    if (!texto) console.error("Resposta sem texto", JSON.stringify(dados).slice(0, 800));
     return json({ resposta: texto || "Não consegui responder. Levante a mão." });
   } catch (erro) {
     console.error("Falha ao chamar a Anthropic", erro);
