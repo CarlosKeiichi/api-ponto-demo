@@ -133,3 +133,30 @@ footer {
   color: #57606a;
   font-size: 0.9rem;
 }
+
+/* ---------- Monitor virtual da aula (/monitor) ---------- */
+.mon{max-width:720px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;background:#F4F6FB}
+.mon-cab{padding:18px 16px 12px;background:#0B1B3A;color:#fff}
+.mon-tag{margin:0;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#8FA3CF;font-weight:700}
+.mon-cab h1{margin:2px 0 4px;font-size:1.5rem;color:#fff}
+.mon-sub{margin:0;font-size:14px;color:#C9D4F0}
+.mon-msgs{flex:1;overflow:auto;padding:14px 14px 6px;display:flex;flex-direction:column;gap:10px}
+.mon-msg{padding:10px 12px;border-radius:14px;font-size:15px;line-height:1.45;white-space:pre-wrap;max-width:92%}
+.mon-msg.aluno{align-self:flex-end;background:#2457E6;color:#fff}
+.mon-msg.monitor{align-self:flex-start;background:#fff;border:1px solid #D6DCEA}
+.mon-msg.erro{align-self:flex-start;background:#FBEBEB;border:1px solid #E4B4B4}
+.mon-msg img{display:block;max-width:100%;border-radius:10px;margin-top:6px}
+.mon-form{position:sticky;bottom:0;background:#fff;border-top:1px solid #D6DCEA;padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px}
+.mon-form textarea,.mon-form select{border:1px solid #D6DCEA;border-radius:12px;padding:10px;font-size:16px;font-family:inherit;background:#fff;width:100%}
+.mon-form textarea{resize:vertical;min-height:72px}
+.mon-anexo{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mon-anexo label{background:#EEF2FA;border:1px solid #D6DCEA;border-radius:12px;padding:10px 12px;font-size:14px;font-weight:700;cursor:pointer}
+.mon-anexo input{display:none}
+.mon-previa{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#5B6670}
+.mon-previa img{height:44px;border-radius:8px;border:1px solid #D6DCEA}
+.mon-previa button{background:none;border:none;font-size:20px;cursor:pointer;color:#5B6670}
+.mon-linha{display:flex;gap:8px;align-items:center}
+.mon-linha select{flex:1;min-width:0}
+.mon-linha button{flex:none;white-space:nowrap;background:#2457E6;color:#fff;border:none;border-radius:12px;padding:12px 18px;font-weight:700;font-size:16px;cursor:pointer}
+.mon-linha button:disabled{opacity:.6}
+.mon-nota{margin:0;font-size:12px;color:#5B6670}
