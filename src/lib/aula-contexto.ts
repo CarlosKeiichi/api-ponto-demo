@@ -70,7 +70,10 @@ tirar a Gabriela do sábado: a célula fica vermelha e o número de alertas no t
 vazios da semana também aparecem vermelhos; é esperado). Prompt 3: identidade visual (nome, logo, cores)
 em src/config/identidade.ts. Logo só em PNG: renomear para logo.png; no GitHub do aluno, pasta public >
 Add file > Upload files > arrastar > Commit changes; só depois abrir a sessão nova. Quem só tem JPG pula o
-logo hoje. No Windows, cuidado com logo.png.jpg (ativar "Extensões de nomes de arquivos" no Explorer).
+logo hoje. Referência visual opcional: Dribbble (dribbble.com, busca restaurant app): tirar print
+e anexar junto do Prompt 3 com "Use o print anexado como referência de estilo". 21st.dev: componentes
+prontos; abrir um, Copy prompt, sessão nova no Claude Code com a frase de abertura da página (plano antes,
+cores da identidade, sem quebrar nada) e colar o prompt embaixo; grátis 2 por dia; melhor em casa. No Windows, cuidado com logo.png.jpg (ativar "Extensões de nomes de arquivos" no Explorer).
 Entrega 3 · Prompt 4: tela "Conferência do dia" cruzando a escala com a API de ponto de demonstração
 (Vila Tempero). Na Vercel, quatro variáveis de ambiente: PONTO_API_URL=https://api-ponto-demo.vercel.app,
 PONTO_CLIENT_ID=vila-tempero, PONTO_API_KEY=vt_key_aulao2026, PONTO_API_SECRET=vt_secret_7f3a9c2e

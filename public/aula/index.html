@@ -493,6 +493,19 @@ As regras devem ficar fáceis de mudar depois (num arquivo de configuração ou 
       <div class="passo"><input type="checkbox" id="dr1"><label for="dr1">No botão acima, escolha um visual de app que combina com o seu restaurante e tire um <b>print</b> da tela (Windows: <b>Win+Shift+S</b>; Mac: <b>Cmd+Shift+4</b>)</label></div>
       <div class="passo"><input type="checkbox" id="dr2"><label for="dr2">Na sessão nova do Claude Code, <b>anexe o print</b> (clipe ou Ctrl+V na caixa) junto com o Prompt 3 e escreva no fim: <b>Use o print anexado como referência de estilo.</b> A IA não abre links, por isso vai o print</label></div>
       </details>
+      <details class="extra"><summary>Opcional, de preferência em casa: componentes prontos do 21st.dev</summary>
+      <p class="muted">O Dribbble dá a <b>ideia</b> (um print). O 21st.dev dá a <b>peça pronta</b>: milhares de componentes de tela (cabeçalho, cartões, botões, calendário) que você vê funcionando antes de usar, cada um com um prompt pronto para a IA.</p>
+      <div class="links" style="grid-template-columns:1fr">
+        <a href="https://21st.dev" target="_blank" rel="noopener">Ver componentes no 21st.dev<small>21st.dev</small></a>
+      </div>
+      <div class="passo"><input type="checkbox" id="tw1"><label for="tw1">Busque o que quer melhorar (ex.: <b>calendar</b>, <b>card</b>, <b>header</b>) e abra um componente que combine com o seu restaurante</label></div>
+      <div class="passo"><input type="checkbox" id="tw2"><label for="tw2">Clique em <b>Copy prompt</b></label></div>
+      <div class="passo"><input type="checkbox" id="tw3"><label for="tw3">Sessão nova no Claude Code. Escreva primeiro a frase abaixo e cole o prompt do 21st.dev logo embaixo dela</label></div>
+      <div class="copiar"><pre>Me mostre o plano antes e espere minha aprovação. Adapte o componente abaixo ao meu sistema, nas cores da minha identidade visual, sem mudar nenhuma funcionalidade e sem quebrar o que já funciona. Se precisar instalar algum pacote novo, me explique por quê no plano. Ao terminar, commit e push direto na branch main, sem pull request.
+
+[cole aqui o prompt copiado do 21st.dev]</pre><button class="bt" data-copiar>Copiar frase de abertura</button></div>
+      <p class="muted">Grátis: 2 prompts por dia. Um componente por sessão, sempre depois do Prompt 3. Hoje a cota é das entregas: deixe para casa, ou faça só se sobrar tempo no fim.</p>
+      </details>
       <div class="copiar"><pre>Me mostre o plano antes e espere minha aprovação.
 
 Aplique a identidade visual do meu restaurante em todo o app, sem mudar nenhuma funcionalidade:
