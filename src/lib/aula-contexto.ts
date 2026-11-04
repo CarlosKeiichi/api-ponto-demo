@@ -18,7 +18,7 @@ No formulário: ligar a chave "Include all branches" (traz as versões prontas e
 escala-nomedoseurestaurante (sem espaço nem acento), Public, Create repository. Depois Settings >
 Collaborators > Add people para convidar a dupla. Plano B se o link não abrir: no repositório
 github.com/CarlosKeiichi/escala-template, botão "Use this template" (linha de cima, ao lado de Star).
-Peça 2 · Plugar o GitHub na IA. Claude: claude.ai > Configurações > Conectores > GitHub > Conectar;
+Peça 2 · Plugar o GitHub na IA. Claude: claude.ai > Configurações > (grupo Personalização) Conectores > buscar GitHub > item "Integração com o GitHub" (não os Plugins) > Conectar;
 o GitHub pede para confirmar o e-mail e as permissões de repositório; escolher All repositories (ou
 marcar o escala-...); depois em claude.ai/code escolher o repositório na lista. Não enviar mensagem
 ainda (a cota começa a contar na primeira mensagem). ChatGPT (Codex): Configurações > Plugins > GitHub
@@ -30,12 +30,18 @@ adiciona a pessoa como colaboradora. Zip não é plano B: a IA e a Vercel trabal
 Peça 3 · Supabase: supabase.com/dashboard > Continue with GitHub > Authorize. New project: nome escala,
 Generate a password (guardar), região South America (São Paulo), Create new project (1 a 2 minutos).
 Depois SQL Editor: colar o conteúdo de supabase/schema.sql (está na página com botão Copiar) e Run;
-esperar "Success". Botão Connect: copiar a Project URL. Settings > API Keys: copiar a chave Publishable
-(começa com sb_publishable_). Guardar as duas num bloco de notas. Projeto grátis pausa após 7 dias sem
+esperar "Success" (se aparecer aviso de snippets, clicar Understood). Organização na primeira vez: nome,
+Personal, Free, Create organization. No New project, Security: deixar Enable Data API e Automatically expose
+new tables marcadas (RLS automático pode ficar desmarcado; o SQL já liga). Botão Connect (topo) > Framework
+Next.js > aba .env.local: copiar as duas linhas prontas NEXT_PUBLIC_SUPABASE_URL e
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY. Plano B da chave: Settings > API Keys > Publishable (sb_publishable_).
+Guardar as duas num bloco de notas. Projeto grátis pausa após 7 dias sem
 uso: Restore project. Se aparecer "Paused", restaurar.
 Peça 4 · Vercel: vercel.com/signup > Hobby > nome > Continue with GitHub > Authorize Vercel. Depois
-vercel.com/new > Add New > Project > Import no repositório escala-... > Environment Variables: criar
-NEXT_PUBLIC_SUPABASE_URL (a Project URL) e NEXT_PUBLIC_SUPABASE_ANON_KEY (a chave Publishable) > Deploy
+vercel.com/new > Add New > Project > Import no repositório escala-... > Environment Variables: colar no
+campo Key as duas linhas do bloco de notas (a Vercel separa nome e valor) > botão Create Project (em
+algumas contas, Deploy). O nome antigo NEXT_PUBLIC_SUPABASE_ANON_KEY também funciona no lugar de
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY; o sistema aceita os dois
 (1 a 2 minutos) > abrir o link escala-xxx.vercel.app. Deu certo quando a tela diz "Banco conectado.
 8 funcionários e 2 turnos cadastrados". Repositório não aparece na importação: clicar em Adjust GitHub
 App Permissions (ou Install) e incluir o escala-.... "Variáveis não configuradas": nome da variável com
@@ -76,7 +82,7 @@ modelo (usa o que vier selecionado).
 
 # Segurança
 Chaves e senhas nunca vão no código nem no chat: ficam em variáveis de ambiente na Vercel. A chave
-Publishable do Supabase (sb_publishable_...) pode ir na Vercel como NEXT_PUBLIC_SUPABASE_ANON_KEY; a
+Publishable do Supabase (sb_publishable_...) pode ir na Vercel como NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (ou ANON_KEY); a
 Secret nunca. O repositório é público e não há segredo no código.
 
 # Erros frequentes e respostas
