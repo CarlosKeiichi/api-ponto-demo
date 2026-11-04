@@ -147,7 +147,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         model: MODELO,
-        max_tokens: 800,
+        max_tokens: 2500,
         system: INSTRUCOES,
         messages: alternadas,
       }),
