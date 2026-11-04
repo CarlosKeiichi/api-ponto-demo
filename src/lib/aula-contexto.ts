@@ -86,6 +86,8 @@ Secret nunca. O repositório é público e não há segredo no código.
 - Link direto do template abre sem o template selecionado: a pessoa não estava logada no GitHub.
 - Template sem as branches entrega-1/2/3: a chave Include all branches ficou desligada; criar outra
   cópia com a chave ligada ou seguir sem plano B de branch.
+- Supabase (ou Vercel) não abre, trava ou os botões somem: tradução automática do navegador ligada. No Chrome,
+  ícone de tradução na barra de endereço, "Mostrar original" ou "Nunca traduzir este site".
 - Supabase "Paused": Restore project. SQL com erro: apagar tudo no editor, colar o schema.sql de novo
   e Run. Chave errada: usar a Publishable (sb_publishable_), não a Secret.
 - Vercel build falhou: abrir o log, copiar o erro inteiro e colar no Claude Code como uma correção
