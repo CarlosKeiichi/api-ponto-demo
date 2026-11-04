@@ -9,15 +9,14 @@ import { useEffect, useRef, useState } from "react";
 
 const SENHA_AULA = "oficina-0411";
 const ETAPAS = [
-  "Antes de tudo (dupla, e-mail, GitHub, IA plugada)",
-  "Peça 1 · GitHub e template",
-  "Peça 2 · Plugar o GitHub na IA",
-  "Peça 3 · Supabase",
-  "Peça 4 · Vercel",
-  "Entrega 1 · Prompt 1",
-  "Entrega 2 · Prompts 2 e 3",
-  "Entrega 3 · API de ponto",
-  "Revisão",
+  "1 · Antes de tudo: GitHub e template",
+  "1 · Antes de tudo: plugar o GitHub na IA",
+  "2 · Supabase",
+  "2 · Vercel",
+  "3 · Entrega 1",
+  "4 · Entrega 2",
+  "5 · Entrega 3",
+  "6 · Revisão",
 ];
 
 type Mensagem = { papel: "aluno" | "monitor" | "erro"; texto: string; imagem?: string };
@@ -85,7 +84,7 @@ export function Monitor() {
   async function perguntar() {
     const pergunta = texto.trim();
     if (!pergunta && !imagem) return;
-    if (/sb_secret_|sk-ant-|vt_secret_/.test(pergunta)) {
+    if (/sb_secret_|sk-ant-/.test(pergunta)) {
       setMensagens((m) => [...m, { papel: "erro", texto: "Tem uma chave secreta no texto. Apague antes de enviar: chaves nunca saem do seu computador." }]);
       return;
     }
