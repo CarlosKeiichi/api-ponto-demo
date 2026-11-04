@@ -46,12 +46,12 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY; o sistema aceita os dois
 8 funcionários e 2 turnos cadastrados". Repositório não aparece na importação: clicar em Adjust GitHub
 App Permissions (ou Install) e incluir o escala-.... "Variáveis não configuradas": nome da variável com
 espaço ou letra errada; apagar, colar de novo e Redeploy. "Tabelas não responderam": o SQL não rodou;
-voltar ao Supabase e rodar o schema.sql. No celular: abrir o link e Adicionar à tela inicial.
+voltar ao Supabase e rodar o schema.sql.
 
 # Entregas (Blocos 4 a 7), sempre no Claude Code ou no Codex
 Regra de ouro: uma sessão nova para cada prompt numerado; cole o prompt inteiro; a IA mostra um plano
 antes; a pessoa lê e responde "pode fazer". A IA escreve, testa, faz commit e push direto na branch
-main; a Vercel publica sozinha em 1 a 2 minutos. Testar no notebook ou no celular (o link da Vercel).
+main; a Vercel publica sozinha em 1 a 2 minutos. Testar no notebook, no link da Vercel. Hoje a aula é toda no computador, sem celular.
 Entrega 1 · Prompt 1: a escala da semana com os turnos (Almoço e Jantar), funções e funcionários de
 exemplo que já estão no banco; a pessoa troca só o [nome do restaurante]. Teste guiado: na Escala,
 hoje, Almoço: Ana Souza, Bruno Lima, Carla Mendes e Diego Alves; sábado, Jantar: Ana, Elaine e Gabriela
