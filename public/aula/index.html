@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oficina de IA · Do problema à solução · Página da aula</title>
+<style>
+  :root{--bg:#EEF2FA;--alt:#E2E8F5;--dark:#0E1A33;--muted:#55627F;--acc:#2563EB;--acc-dark:#1D4ED8;--acc2:#1F7A4D;--card:#FFFFFF;--border:#D2DBEE;--red:#B23A2E;--redbg:#F6E4E1;--greenbg:#E3F2EA;--amberbg:#FFF4D6;--navy:#070B1A;--navy2:#0B1530;--navy3:#122457;--sky:#8AB4FF}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--dark);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  header{position:relative;overflow:hidden;color:#fff;padding:22px 18px 18px;background:radial-gradient(90% 70% at 100% 0%,rgba(59,130,246,.55),transparent 62%),radial-gradient(70% 60% at 0% 100%,rgba(37,99,235,.35),transparent 60%),linear-gradient(180deg,var(--navy) 0%,var(--navy2) 100%)}
+  header::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(138,180,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(138,180,255,.07) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+  header > *{position:relative}
+  .hdr{max-width:720px;margin:0 auto}
+  .pill{display:inline-block;background:#1E3FBF;border:1px solid #4F7BFF;color:#fff;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;font-size:11.5px;padding:6px 12px;border-radius:999px}
+  .pill + .pill{background:transparent;border-color:rgba(138,180,255,.45);color:var(--sky);font-weight:600}
+  header h1{margin:12px 0 0;font-size:34px;line-height:1;letter-spacing:-.5px;font-weight:800;color:#fff}
+  header h1 span{display:block;color:var(--sky)}
+  header p{margin:10px 0 0;color:#C9D6F2;font-size:15px}
+  header p.quando{margin-top:6px;color:#8FA3CF;font-size:13.5px}
+  .logos{margin:18px 0 0;padding:12px 0 0;border-top:1px solid rgba(138,180,255,.22)}
+  .logos img{display:block;width:100%;max-width:520px;height:auto}
+  main{max-width:720px;margin:0 auto;padding:16px 14px 24px}
+  .estado{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin:0 0 16px;font-size:15px;color:var(--muted)}
+  .estado b{color:var(--dark)}
+  .dot{width:10px;height:10px;border-radius:50%;background:#9aa4ad;flex:none}
+  .dot.on{background:var(--acc2)}
+  section.bloco{background:var(--card);border:1px solid var(--border);border-radius:18px;margin:0 0 14px;overflow:hidden;box-shadow:0 1px 2px rgba(14,26,51,.05)}
+  section.bloco > .cab{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
+  section.bloco > .cab h2{margin:0;font-size:18px;line-height:1.2;flex:1}
+  section.bloco > .cab .tag{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--acc);display:block;margin-bottom:2px}
+  section.bloco > .cab .seta{color:var(--muted);transition:transform .2s}
+  section.bloco.aberto > .cab .seta{transform:rotate(90deg)}
+  section.bloco > .corpo{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}
+  section.bloco.aberto > .corpo{display:block}
+  section.bloco.travado > .cab{opacity:.55;cursor:default}
+  section.bloco.travado > .corpo{display:none}
+  .cadeado{font-size:13px;color:var(--acc-dark);background:#E6EEFF;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  h4.sub{font-size:15px;margin:14px 0 6px;color:var(--acc-dark);text-transform:uppercase;letter-spacing:.5px}
+  h3{font-size:16px;margin:18px 0 8px;color:var(--dark)}
+  p{margin:8px 0}
+  .muted{color:var(--muted);font-size:15px}
+  .links{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:10px 0 4px}
+  .links a{display:block;background:var(--acc);color:#fff;box-shadow:0 2px 0 var(--acc-dark);text-decoration:none;font-weight:700;padding:14px 12px;border-radius:14px;text-align:center;font-size:15px}
+  .links a small{display:block;font-weight:400;opacity:.85;font-size:12px;margin-top:2px;overflow-wrap:anywhere}
+  .passo{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--alt)}
+  .passo:last-child{border-bottom:none}
+  .passo input{width:24px;height:24px;flex:none;margin:2px 0 0;accent-color:var(--acc)}
+  .passo label{flex:1;cursor:pointer}
+  .passo.feito label{color:var(--muted);text-decoration:line-through}
+  .check{background:var(--greenbg);border:1px solid #BFD6CB;border-radius:12px;padding:10px 14px;margin:12px 0 4px;font-size:15px}
+  .check b{color:var(--acc2);display:block;font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+  .copiar{position:relative;background:var(--navy2);color:#EAF0FF;border:1px solid var(--navy3);border-radius:14px;padding:14px 14px 56px;margin:10px 0}
+  .copiar pre{margin:0;white-space:pre-wrap;word-break:break-word;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .copiar .bt{position:absolute;right:12px;bottom:12px;background:var(--acc);color:#fff;border:none;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;cursor:pointer}
+  .copiar .bt.ok{background:var(--acc2)}
+  .linha{display:flex;align-items:center;gap:10px;background:var(--alt);border-radius:12px;padding:10px 12px;margin:8px 0}
+  .linha code{flex:1;font:14px/1.4 ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
+  .linha .bt{background:var(--acc);color:#fff;border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap}
+  .linha .bt.ok{background:var(--acc2)}
+  details{background:var(--alt);border-radius:12px;padding:10px 14px;margin:10px 0}
+  summary{cursor:pointer;font-weight:700;font-size:15px}
+  details p{font-size:15px}
+  details.tela img{display:block;width:100%;height:auto;border-radius:10px;margin-top:8px;border:1px solid var(--border)}
+  .aviso{background:var(--amberbg);border:1px solid #E7D3A6;border-radius:12px;padding:10px 14px;font-size:15px;margin:10px 0}
+  .destaque{color:var(--acc);font-weight:700}
+  .codigo{display:flex;gap:8px;margin:8px 0}
+  .codigo input{flex:1;border:1px solid var(--border);border-radius:12px;padding:12px;font-size:16px;text-transform:uppercase}
+  .codigo button{background:var(--acc);color:#fff;border:none;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+  .painel{background:var(--card);border:2px solid var(--acc);border-radius:18px;padding:16px;margin:24px 0 0}
+  .painel h2{margin:0 0 6px;font-size:18px}
+  .painel .grade{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .painel button{background:var(--alt);border:1px solid var(--border);border-radius:14px;padding:16px 10px;font-weight:700;font-size:15px;cursor:pointer;color:var(--dark)}
+  .painel button.ativo{background:var(--acc);border-color:var(--acc);color:#fff}
+  .painel button.tudo{grid-column:span 2;background:var(--acc2);border-color:var(--acc2);color:#fff}
+  .painel button.zero{grid-column:span 2;background:#fff}
+
+
+  section.bloco.concluido > .cab{background:var(--acc);color:#fff}
+  section.bloco.concluido > .cab .tag{color:#DCE6FF}
+  section.bloco.concluido > .cab h2{color:#fff}
+  section.bloco.concluido > .cab .seta{color:#fff}
+  .selo-ok{font-size:13px;font-weight:700;color:#fff;background:rgba(255,255,255,.22);padding:4px 10px;border-radius:999px;white-space:nowrap;display:none}
+  section.bloco.concluido > .cab .selo-ok{display:inline-block}
+  .fim-bloco{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border)}
+  .fim-bloco .travou{background:var(--amberbg);border:1px solid #E7D3A6;border-radius:12px;padding:10px 14px;font-size:15px;margin-bottom:10px}
+  .fim-bloco .travou ol{margin:6px 0 0 18px;padding:0}
+  .fim-bloco .concluir{width:100%;background:#fff;color:var(--acc);border:2px solid var(--acc);border-radius:14px;padding:14px;font-weight:700;font-size:16px;cursor:pointer}
+  .nav-blocos{gap:12px;justify-content:space-between;margin:18px 0}
+  .nav-blocos button{flex:1;min-height:48px;font:inherit;font-weight:700;border-radius:12px;border:2px solid var(--border);background:#fff;cursor:pointer}
+  .nav-blocos button:disabled{opacity:.4;cursor:default}
+  section.bloco.concluido .fim-bloco .concluir{background:var(--acc);color:#fff}
+  .ajuda-anexo{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .ajuda-anexo label{background:var(--alt);border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:14px;font-weight:700;cursor:pointer}
+  .ajuda-anexo input{display:none}
+  .ajuda-anexo .previa{display:none;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+  .ajuda-anexo .previa img{height:44px;border-radius:8px;border:1px solid var(--border)}
+  .ajuda-anexo .previa button{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)}
+  .ajuda .msg img{display:block;max-width:100%;border-radius:10px;margin-top:6px}
+  .ajuda-bt{text-decoration:none;position:fixed;right:14px;bottom:14px;z-index:50;background:var(--acc);color:#fff;border:none;border-radius:999px;padding:14px 20px;font-weight:700;font-size:16px;box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer}
+  .ajuda{position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--card);border-top:2px solid var(--acc);border-radius:18px 18px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.25);max-height:78vh;display:flex;flex-direction:column}
+  .ajuda[hidden]{display:none}
+  .ajuda-cab{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border)}
+  .ajuda-cab .muted{flex:1;font-size:13px}
+  .ajuda-cab button{background:none;border:none;font-size:26px;line-height:1;cursor:pointer;color:var(--muted);padding:4px 8px}
+  .ajuda-msgs{overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:120px}
+  .ajuda .msg{padding:10px 12px;border-radius:14px;font-size:15px;line-height:1.45;white-space:pre-wrap;max-width:92%}
+  .ajuda .msg.aluno{align-self:flex-end;background:var(--acc);color:#fff}
+  .ajuda .msg.monitor{align-self:flex-start;background:var(--alt);border:1px solid var(--border)}
+  .ajuda .msg.erro{align-self:flex-start;background:#FBEBEB;border:1px solid #E4B4B4}
+  .ajuda-form{display:flex;flex-direction:column;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--border)}
+  .ajuda-form select,.ajuda-form textarea{border:1px solid var(--border);border-radius:12px;padding:10px;font-size:16px;font-family:inherit;background:#fff}
+  .ajuda-form textarea{min-height:72px;resize:vertical}
+  .ajuda-form .linha{display:flex;gap:8px;align-items:center}
+  .ajuda-form .linha select{flex:1;min-width:0}
+  .ajuda-form .linha button{flex:none;white-space:nowrap;background:var(--acc);color:#fff;border:none;border-radius:12px;padding:12px 18px;font-weight:700;font-size:16px;cursor:pointer}
+  .ajuda-form .linha button:disabled{opacity:.6}
+  @media(min-width:720px){.ajuda{left:auto;right:14px;bottom:14px;width:420px;border-radius:18px;border:2px solid var(--acc)}}
+  footer{position:relative;overflow:hidden;color:#8FA3CF;font-size:13px;padding:22px 18px 28px;background:radial-gradient(80% 70% at 0% 0%,rgba(37,99,235,.35),transparent 60%),linear-gradient(180deg,var(--navy2),var(--navy))}
+  .ftr{max-width:720px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px}
+  .ftr img{height:30px;width:auto;display:block}
+  .ftr .txt{flex:1;min-width:200px;line-height:1.45}
+  .ftr .txt b{color:#EAF0FF;font-weight:700;display:block}
+  footer button{background:none;border:none;color:#8FA3CF;text-decoration:underline;cursor:pointer;font-size:13px;padding:0}
+  .ftr .logos-ftr{width:100%;padding-top:14px;border-top:1px solid rgba(138,180,255,.18)}
+  .ftr .logos-ftr img{height:auto;width:100%;max-width:420px}
+  @media (min-width:560px){header h1{font-size:44px}header{padding:30px 18px 22px}}
+
+  /* ---- versão polida ---- */
+  main{max-width:680px}
+  section.bloco > .corpo{padding:4px 18px 18px}
+  .corpo h3{font-size:15px;letter-spacing:.3px;color:var(--acc-dark);margin:22px 0 6px;padding-top:4px}
+  .corpo h3:first-child{margin-top:12px}
+  .passo{padding:12px 0;border-bottom:1px solid #EEF1F6}
+  .passo:last-of-type{border-bottom:none}
+  .passo label{font-size:16px;line-height:1.45}
+  .check{background:#F1F8F4;border:none;border-left:4px solid #3C8C66;border-radius:8px;padding:10px 14px}
+  .aviso{background:#FFF9EC;border:none;border-left:4px solid #E3B657;border-radius:8px}
+  details{background:transparent;border-radius:0;padding:0;margin:6px 0}
+  details > summary{cursor:pointer;color:var(--acc);font-weight:700;font-size:14px;padding:6px 0;list-style:none}
+  details > summary::-webkit-details-marker{display:none}
+  details > summary::before{content:"+ ";}
+  details[open] > summary::before{content:"− ";}
+  details[open]{background:#F6F8FC;border-radius:10px;padding:4px 12px 10px}
+  details.socorro{margin-top:16px;border-top:1px dashed var(--border);padding-top:8px}
+  details.socorro[open]{border-top:none}
+  .aj-item{margin:8px 0 4px}
+  .aj-tit{font-weight:700;font-size:14px;margin:6px 0 2px;color:var(--dark)}
+  .aj-item p{font-size:14px;margin:4px 0}
+  .muted{font-size:14px}
+  .fim-bloco .travou{background:#F6F8FC;border:none;font-size:14px}
+
+
+  /* ---- linha do tempo ---- */
+  .linha-tempo{position:sticky;top:0;z-index:40;background:rgba(240,244,251,.96);backdrop-filter:blur(6px);margin:0 -14px 14px;padding:12px 14px 10px;border-bottom:1px solid var(--border)}
+  .lt-trilho{display:flex;align-items:flex-start;justify-content:space-between;position:relative}
+  .lt-trilho::before{content:"";position:absolute;left:22px;right:22px;top:19px;height:3px;background:#D6DEEC;border-radius:3px}
+  .lt-passo{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;padding:0;font:inherit;color:var(--muted)}
+  .lt-bola{width:40px;height:40px;border-radius:50%;background:#fff;border:3px solid #C9D3E5;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:var(--muted);position:relative;z-index:1;transition:all .15s}
+  .lt-rot{font-size:12px;font-weight:700;line-height:1.15;text-align:center;max-width:72px}
+  .lt-passo.feito .lt-bola{background:var(--acc);border-color:var(--acc);color:#fff}
+  .lt-passo.atual .lt-bola{border-color:var(--acc);color:var(--acc);box-shadow:0 0 0 5px rgba(36,87,230,.15)}
+  .lt-passo.atual.feito .lt-bola{color:#fff}
+  .lt-passo.atual .lt-rot{color:var(--acc)}
+  .lt-barra{height:4px;border-radius:999px;background:#E3E9F5;margin:10px 4px 0;overflow:hidden}
+  .lt-barra i{display:block;height:100%;width:0;background:var(--acc);transition:width .2s}
+  @media(min-width:760px){.lt-rot{font-size:13px;max-width:110px}.lt-bola{width:44px;height:44px;font-size:17px}.lt-trilho::before{top:21px}}
+  section.bloco{display:none}
+  section.bloco.atual{display:block}
+  section.bloco.atual > .corpo{display:block}
+  section.bloco > .cab{cursor:default}
+  section.bloco > .cab .seta{display:none}
+  section.bloco > .cab .tag{display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="hdr">
+    <span class="pill">Oficina de IA</span> <span class="pill">Para donos de bares e restaurantes</span>
+    <h1>Do problema<span>à solução</span></h1>
+    <p>Página da aula: passos, prompts e links. Deixe aberta no notebook a tarde inteira.</p>
+    <p class="quando">Quarta 04/11 · 13h30 às 17h30 · Leques Brasil Hotel-Escola</p>
+    <div class="logos"><img src="/aula/img/daf18a9bbc1c160b9dd1c0b045f201a3.png" alt="Realização Abrasel 40 anos, Fogo Alto e ESBRE educação. Patrocínio Cielo." width="715" height="105"></div>
+  </div>
+</header>
+<main>
+  <nav class="linha-tempo" id="linha-tempo" aria-label="Blocos da aula"><div class="lt-trilho" id="lt-trilho"></div><div class="lt-barra"><i id="lt-barra"></i></div></nav>
+  
+
+  <!-- ===================== 0. SEMPRE ABERTO ===================== -->
+  <section class="bloco aberto" data-bloco="0">
+    <div class="cab"><div><span class="tag">Blocos 1 e 2 · Antes de tudo</span><h2>Dupla, e-mail, GitHub e a IA plugada</h2></div><span class="selo-ok">Concluído ✓</span><span class="seta">›</span></div>
+    <div class="corpo">
+      
+      <div class="aviso"><b>Hoje é tudo no notebook.</b> Esta página, as contas, o Claude Code e os testes: tudo no computador. É desta página que você copia e cola os prompts.</div>
+      <h3>1. A mesa pronta</h3>
+      <div class="passo"><input type="checkbox" id="l1"><label for="l1">Já está com a sua <b>dupla</b>? Combinem quem é o <b>piloto</b> (faz os passos) e quem é o <b>copiloto</b> (confere pela página e é a reserva de cota). O copiloto sai com o mesmo sistema e refaz o dele em casa com esta página</label></div>
+      <div class="passo"><input type="checkbox" id="l2"><label for="l2"><b>O mesmo e-mail da sua conta Claude Pro</b>, aberto numa aba do notebook? É ele em tudo hoje (GitHub, Supabase, Vercel), e o código do GitHub chega por ele. Já tem GitHub? Use esse, não crie outro</label></div>
+      <div class="passo"><input type="checkbox" id="l3"><label for="l3">Crie a sua conta no <b>GitHub</b> pelo botão abaixo. Já tem? Deixe logado</label></div>
+      <div class="links" style="grid-template-columns:1fr">
+        <a href="https://github.com/signup" target="_blank" rel="noopener">Criar conta no GitHub<small>github.com/signup</small></a>
+      </div>
+      <div class="passo"><input type="checkbox" id="l4"><label for="l4">Logo depois, com o GitHub logado, crie a sua cópia do template pelo botão abaixo. Marque <b>Include all branches</b>, dê o nome <b>escala-nomedoseurestaurante</b>, deixe <b>Public</b> e clique em <b>Create repository</b></label></div>
+      <div class="links" style="grid-template-columns:1fr">
+        <a href="https://github.com/new?template_owner=CarlosKeiichi&amp;template_name=escala-template" target="_blank" rel="noopener">Criar a minha cópia do template<small>github.com/new?template_owner=CarlosKeiichi&amp;template_name=escala-template</small></a>
+      </div>
+      <details class="tela"><summary>Como é a tela (print real, com os números dos passos)</summary><img src="/aula/img/5fb8b88ad781938078156269f989035b.png" alt="Print do formulário Create a new repository do GitHub com o template já selecionado: 1 chave Include all branches, 2 nome do repositório, 3 Public, 4 Create repository" loading="lazy"></details>
+      <div class="passo"><input type="checkbox" id="g5"><label for="g5">Convide a dupla: <b>Settings</b>, <b>Collaborators</b>, <b>Add people</b>, digite o usuário do GitHub dela. Ela aceita o convite no e-mail</label></div>
+      <div class="check"><b>Deu certo quando</b>Você vê o seu repositório, com os mesmos arquivos do template dentro, e a dupla aparece em Collaborators.</div>
+      <h3>2. A IA plugada no GitHub</h3>
+      <p class="muted">Fechou este bloco quando o seu <b>escala-...</b> aparecer dentro da IA.</p>
+      <div class="aviso"><b>Antes de plugar, um teste de bolso:</b> a foto no canto superior direito do github.com é a conta que criou o repositório, com o mesmo e-mail da sua conta Claude? Se não for, saia do GitHub e entre com a conta certa. É daqui que vem quase todo "não aparece".</div>
+      
+      <div class="passo"><input type="checkbox" id="c1"><label for="c1">Abra <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> com a sua conta Pro. Vá em <b>Configurações</b> e, no grupo <b>Personalização</b>, clique em <b>Conectores</b></label></div>
+      <div class="passo"><input type="checkbox" id="c2"><label for="c2">Na busca, escreva <b>GitHub</b>. O item certo é <b>Integração com o GitHub</b> (não os Plugins de baixo): clique em <b>Conectar</b>. O GitHub pede para confirmar o <b>e-mail</b> e as <b>permissões de repositório</b>: autorize</label></div>
+      <div class="passo"><input type="checkbox" id="c3"><label for="c3">Quando ele perguntar a quais repositórios a IA tem acesso, escolha <b>All repositories</b> (ou marque o seu escala-...). Pronto quando aparece <b>Conectado</b> ao lado</label></div>
+      <details class="tela"><summary>Como é a tela (print real, com os números dos passos)</summary><img src="/aula/img/8ca9c50efa21bdb9d447f013270a45c1.jpg" alt="Print das Configurações do claude.ai: 1 Conectores no grupo Personalização, 2 busca GitHub, 3 Integração com o GitHub com Conectado" loading="lazy"></details>
+      <div class="passo"><input type="checkbox" id="c4"><label for="c4">Abra <a href="https://claude.ai/code" target="_blank" rel="noopener">claude.ai/code</a> e escolha o seu <b>escala-...</b> na lista de repositórios. <span class="destaque">Não envie nenhuma mensagem ainda.</span></label></div>
+      <div class="check"><b>Deu certo quando</b>O seu escala-... aparece dentro do Claude Code, sem nenhuma mensagem enviada.</div>
+      <details class="extra"><summary>Usa ChatGPT (Codex)? O caminho equivalente</summary>
+      <p class="muted">Se o seu código está no GitHub, dá para conectar a conta no ChatGPT pelo menu de Plugins.</p>
+      <div class="passo"><input type="checkbox" id="x1"><label for="x1">Abra <b>Configurações</b>, depois <b>Plugins</b></label></div>
+      <div class="passo"><input type="checkbox" id="x2"><label for="x2">Procure <b>GitHub</b> e selecione <b>Conectar</b></label></div>
+      <div class="passo"><input type="checkbox" id="x3"><label for="x3">Entre na sua conta do GitHub e autorize o aplicativo</label></div>
+      <div class="passo"><input type="checkbox" id="x4"><label for="x4">No Codex, escolha o seu <b>escala-...</b> na lista de repositórios. <span class="destaque">Não envie nenhuma mensagem ainda.</span></label></div>
+      <div class="check"><b>Deu certo quando</b>O seu escala-... aparece dentro do Codex, sem nenhuma mensagem enviada.</div>
+      <p class="muted">Os prompts da aula são os mesmos nas duas ferramentas. Quem usa o Codex cola o prompt lá, pede o plano e aprova do mesmo jeito.</p></details>
+      <details class="socorro"><summary>Se algo der errado</summary>
+        <div class="aj-item"><p class="aj-tit">Erros comuns</p><p>O código não chega: espere um minuto, olhe o spam, depois <b>Resend</b>.</p><p>Nome de usuário já existe: acrescente o nome do restaurante.</p><p>Senha recusada: 8 ou mais caracteres com número e letra, ou 15 ou mais.</p><p>Apareceu "Your account has been flagged": crie a conta pelo 4G do celular (compartilhe a internet com o notebook) e avise o Carlos: ele tem uma conta reserva.</p></div>
+        <div class="aj-item"><p class="aj-tit">Caminho alternativo, se o link direto não abrir</p><p>Abra o <a href="https://github.com/CarlosKeiichi/escala-template" target="_blank" rel="noopener">template</a> e clique no botão verde <b>Use this template</b>, que fica na linha de cima, ao lado de <b>Star</b> (não é o botão <b>Code</b>). Depois <b>Create a new repository</b>: cai no mesmo formulário.</p><img src="/aula/img/421310c87bb40c5860484ceaf25f5c9c.png" alt="Print do repositório no GitHub com o botão Use this template destacado na linha de cima, ao lado de Star" loading="lazy" style="display:block;width:100%;height:auto;border-radius:10px;margin-top:8px;border:1px solid var(--border)"></div>
+        <div class="aj-item"><p class="aj-tit">Erros comuns</p><p>O formulário abriu sem o template selecionado: você não estava logado. Entre no GitHub e abra o link de novo.</p><p>Esqueceu a chave Include all branches: crie de novo pelo mesmo link, com o nome <b>escala-...-2</b>, e use esse. Leva um minuto. Sem as branches, a versão pronta (plano B) não existe no seu repositório.</p><p>Clicou em Code e abriu um menu de Clone e Download ZIP: feche; esse é o caminho para baixar no computador, e não é o nosso.</p></div>
+        <div class="aj-item"><p class="aj-tit">O repositório não apareceu? Plano B, nesta ordem</p>
+        <p><b>1. Permissão do app.</b> Abra <a href="https://github.com/apps/claude" target="_blank" rel="noopener">github.com/apps/claude</a>, clique em <b>Configure</b> e marque <b>All repositories</b> (ou inclua o seu escala-...). Volte ao claude.ai/code e recarregue a página. Resolve a maioria dos casos.</p>
+        <p><b>2. Conta certa.</b> Confira se o GitHub aberto no navegador é a conta que criou o repositório (foto no canto superior direito). Se for outra, saia e entre com a conta certa; depois refaça a conexão.</p>
+        <p><b>3. A dupla assume.</b> Se em 2 minutos não resolveu, o sistema de hoje nasce na conta da dupla: ela cria a cópia do template, adiciona você como colaborador (Settings, Collaborators) e vocês seguem juntos no mesmo repositório e no mesmo link. Você refaz o seu em casa com esta página.</p>
+        <p class="muted">Zip não é plano B: a IA que constrói e a Vercel que publica trabalham a partir do repositório no GitHub, não de um arquivo. O código do template fica sempre disponível em <a href="https://github.com/CarlosKeiichi/escala-template" target="_blank" rel="noopener">github.com/CarlosKeiichi/escala-template</a> para ler ou baixar depois.</p>
+      </div>
+      </details>
+      <div class="fim-bloco">
+        <div class="travou"><b>Travou?</b> Nesta ordem:<ol><li>Pergunte ao <a href="https://api-ponto-demo.vercel.app/monitor" target="_blank" rel="noopener">monitor virtual</a> (botão no canto da tela), com o print do erro.</li><li>Peça para a dupla olhar a sua tela.</li><li>Levante a mão que o Carlos vai até você.</li></ol></div>
+        <button class="concluir" type="button">Concluí este bloco</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 1. INFRA ===================== -->
+  <section class="bloco" data-bloco="1">
+    <div class="cab"><div><span class="tag">Bloco 3 · Infra na prática</span><h2>Supabase e Vercel: o site no ar</h2></div><span class="selo-ok">Concluído ✓</span><span class="seta">›</span></div>
+    <div class="corpo">
+      
+      <h3>Peça 3 · Supabase: entrar e criar o projeto</h3>
+      <p class="muted">Já tem projeto da pré-aula? Abra (se estiver <b>Paused</b>, <b>Restore project</b>) e pule para as tabelas.</p>
+      <div class="links" style="grid-template-columns:1fr">
+        <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">Criar conta no Supabase (com o GitHub)<small>supabase.com/dashboard</small></a>
+      </div>
+      <div class="aviso"><b>Tela do Supabase não abre, trava ou fica estranha?</b> É a tradução automática do navegador. Desligue para este site: no Chrome, clique no ícone de tradução na barra de endereço e escolha <b>Mostrar original</b> (ou <b>Nunca traduzir este site</b>). Vale também para a Vercel.</div>
+      <div class="passo"><input type="checkbox" id="sa1"><label for="sa1">No botão acima, clique em <b>Continue with GitHub</b> (o mesmo GitHub de antes). Se o GitHub perguntar, <b>Authorize</b></label></div>
+      <div class="passo"><input type="checkbox" id="sa2"><label for="sa2">Na primeira vez, o Supabase pede uma <b>Organização</b>: nome (o do seu restaurante), tipo <b>Personal</b>, plano <b>Free</b>, <b>Create organization</b>. Já tem conta? Ele mostra a sua organização; só siga</label></div>
+      <details class="tela"><summary>Como é a tela (print real, com os números dos passos)</summary><img src="/aula/img/5fa52d866e4e20f94a6f766f511dede5.jpg" alt="Print do Supabase Create a new organization: 1 nome, 2 tipo Personal, 3 plano Free, 4 Create organization" loading="lazy"></details>
+      <div class="passo"><input type="checkbox" id="sa3"><label for="sa3"><b>New project</b>. Nome: <b>escala</b>. Senha do banco: <b>Generate a password</b> e copie para um lugar seu (não vamos usar hoje)</label></div>
+      <div class="passo"><input type="checkbox" id="sa4"><label for="sa4">Região: <b>South America (São Paulo)</b>. Em <b>Security</b>, deixe as caixas como vieram (<b>Enable Data API</b> e <b>Automatically expose new tables</b> marcadas; o RLS automático pode ficar desmarcado, o nosso SQL já liga a proteção). <b>Create new project</b> e espere 1 a 2 minutos</label></div>
+      <details class="tela"><summary>Como é a tela (print real, com os números dos passos)</summary><img src="/aula/img/578ddfaa50a4dd52f41554cdbae014b2.jpg" alt="Print do Supabase Create a new project: 1 organização, 2 nome do projeto, 3 Generate a password, 4 região, 5 Security com as caixas marcadas" loading="lazy"></details>
+      <div class="check"><b>Deu certo quando</b>o projeto <b>escala</b> aparece com a bolinha verde e o menu da esquerda mostra <b>SQL Editor</b>.</div>
+      <h3>Peça 3 · Supabase: criar as tabelas e copiar as chaves</h3>
+      <div class="passo"><input type="checkbox" id="s1"><label for="s1">No projeto <b>escala</b>, espere a bolinha ficar verde</label></div>
+      <div class="passo"><input type="checkbox" id="s2"><label for="s2">Menu <b>SQL Editor</b> (ícone de terminal na barra da esquerda). Se aparecer um aviso sobre snippets, clique em <b>Understood</b></label></div>
+      <div class="passo"><input type="checkbox" id="s3"><label for="s3">Clique em <b>Copiar SQL</b> abaixo, cole no editor e clique em <b>Run</b> (pode rodar mais de uma vez sem medo)</label></div>
+      <details class="tela"><summary>Como é a tela do SQL Editor (print real)</summary><img src="/aula/img/2adc44ff0eec57e53090d65cc7804140.jpg" alt="Print do SQL Editor do Supabase: 1 ícone SQL Editor, 2 editor onde cola o SQL, 3 Run, 4 botão Connect no topo" loading="lazy"></details>
+      <details open><summary>O SQL que cria as tabelas (é o arquivo supabase/schema.sql do seu repositório)</summary><div class="copiar"><pre>-- =====================================================================
+-- Sistema de escala · estrutura do banco de dados (Supabase / Postgres)
+-- Cole este arquivo inteiro no SQL Editor do Supabase e clique em Run.
+-- Pode rodar mais de uma vez sem problema.
+-- =====================================================================
+
+create extension if not exists &quot;pgcrypto&quot;;
+
+-- Funcionários do restaurante
+create table if not exists funcionarios (
+  id uuid primary key default gen_random_uuid(),
+  nome text not null,
+  funcao text not null,
+  telefone text,
+  cpf text unique,
+  ativo boolean not null default true,
+  criado_em timestamptz not null default now()
+);
+
+-- Turnos de trabalho (ex.: Almoço, Jantar)
+create table if not exists turnos (
+  id uuid primary key default gen_random_uuid(),
+  nome text not null unique,
+  hora_inicio time not null,
+  hora_fim time not null,
+  ordem int not null default 0
+);
+
+-- Escala: quem trabalha em qual turno em qual dia
+create table if not exists escalas (
+  id uuid primary key default gen_random_uuid(),
+  data date not null,
+  turno_id uuid not null references turnos (id) on delete cascade,
+  funcionario_id uuid not null references funcionarios (id) on delete cascade,
+  criado_em timestamptz not null default now(),
+  unique (data, turno_id, funcionario_id)
+);
+create index if not exists escalas_data_idx on escalas (data);
+
+-- Regras da casa: mínimo de pessoas por turno e função
+-- dia_semana: 0 = domingo ... 6 = sábado; null = vale para todos os dias
+create table if not exists regras (
+  id uuid primary key default gen_random_uuid(),
+  dia_semana smallint check (dia_semana between 0 and 6),
+  turno_id uuid not null references turnos (id) on delete cascade,
+  funcao text not null,
+  minimo int not null default 1
+);
+
+-- Configurações gerais (chave e valor em texto)
+create table if not exists configuracoes (
+  chave text primary key,
+  valor text not null
+);
+
+-- ---------------------------------------------------------------------
+-- Acesso: liberado para a chave pública (anon). O app ainda não tem login.
+-- Quando adicionar login, troque estas políticas por regras por usuário.
+-- ---------------------------------------------------------------------
+alter table funcionarios enable row level security;
+alter table turnos enable row level security;
+alter table escalas enable row level security;
+alter table regras enable row level security;
+alter table configuracoes enable row level security;
+
+drop policy if exists &quot;acesso aberto&quot; on funcionarios;
+drop policy if exists &quot;acesso aberto&quot; on turnos;
+drop policy if exists &quot;acesso aberto&quot; on escalas;
+drop policy if exists &quot;acesso aberto&quot; on regras;
+drop policy if exists &quot;acesso aberto&quot; on configuracoes;
+
+create policy &quot;acesso aberto&quot; on funcionarios for all using (true) with check (true);
+create policy &quot;acesso aberto&quot; on turnos for all using (true) with check (true);
+create policy &quot;acesso aberto&quot; on escalas for all using (true) with check (true);
+create policy &quot;acesso aberto&quot; on regras for all using (true) with check (true);
+create policy &quot;acesso aberto&quot; on configuracoes for all using (true) with check (true);
+
+-- ---------------------------------------------------------------------
+-- Dados de exemplo (restaurante fictício Vila Tempero)
+-- Os CPFs são fictícios e batem com a API de ponto de demonstração.
+-- ---------------------------------------------------------------------
+insert into turnos (nome, hora_inicio, hora_fim, ordem) values
+  (&#x27;Almoço&#x27;, &#x27;11:00&#x27;, &#x27;15:30&#x27;, 1),
+  (&#x27;Jantar&#x27;, &#x27;18:00&#x27;, &#x27;23:30&#x27;, 2)
+on conflict (nome) do nothing;
+
+insert into funcionarios (nome, funcao, telefone, cpf) values
+  (&#x27;Ana Souza&#x27;,      &#x27;Salão&#x27;,      &#x27;(11) 91234-0001&#x27;, &#x27;12345678901&#x27;),
+  (&#x27;Bruno Lima&#x27;,     &#x27;Cozinha&#x27;,    &#x27;(11) 91234-0002&#x27;, &#x27;23456789012&#x27;),
+  (&#x27;Carla Mendes&#x27;,   &#x27;Caixa&#x27;,      &#x27;(11) 91234-0003&#x27;, &#x27;34567890123&#x27;),
+  (&#x27;Diego Alves&#x27;,    &#x27;Cozinha&#x27;,    &#x27;(11) 91234-0004&#x27;, &#x27;45678901234&#x27;),
+  (&#x27;Elaine Costa&#x27;,   &#x27;Salão&#x27;,      &#x27;(11) 91234-0005&#x27;, &#x27;56789012345&#x27;),
+  (&#x27;Fábio Rocha&#x27;,    &#x27;Bar&#x27;,        &#x27;(11) 91234-0006&#x27;, &#x27;67890123456&#x27;),
+  (&#x27;Gabriela Nunes&#x27;, &#x27;Salão&#x27;,      &#x27;(11) 91234-0007&#x27;, &#x27;78901234567&#x27;),
+  (&#x27;Henrique Dias&#x27;,  &#x27;Entregador&#x27;, &#x27;(11) 91234-0008&#x27;, &#x27;89012345678&#x27;)
+on conflict (cpf) do nothing;
+
+insert into configuracoes (chave, valor) values
+  (&#x27;folgas_minimas_semana&#x27;, &#x27;1&#x27;),
+  (&#x27;bloquear_fechar_e_abrir&#x27;, &#x27;true&#x27;),
+  (&#x27;tolerancia_atraso_minutos&#x27;, &#x27;10&#x27;),
+  (&#x27;hora_extra_minutos&#x27;, &#x27;30&#x27;)
+on conflict (chave) do nothing;
+
+-- Regras de exemplo: todos os dias, 2 no salão e 1 na cozinha por turno;
+-- sexta e sábado à noite, 3 no salão e 2 na cozinha.
+insert into regras (dia_semana, turno_id, funcao, minimo)
+select null, t.id, &#x27;Salão&#x27;, 2 from turnos t
+where not exists (select 1 from regras);
+insert into regras (dia_semana, turno_id, funcao, minimo)
+select null, t.id, &#x27;Cozinha&#x27;, 1 from turnos t
+where (select count(*) from regras) = 2;
+insert into regras (dia_semana, turno_id, funcao, minimo)
+select d, t.id, &#x27;Salão&#x27;, 3 from turnos t, unnest(array[5, 6]) as d
+where t.nome = &#x27;Jantar&#x27; and (select count(*) from regras) = 4;
+insert into regras (dia_semana, turno_id, funcao, minimo)
+select d, t.id, &#x27;Cozinha&#x27;, 2 from turnos t, unnest(array[5, 6]) as d
+where t.nome = &#x27;Jantar&#x27; and (select count(*) from regras) = 6;</pre><button class="bt" data-copiar>Copiar SQL</button></div></details>
+      <div class="aviso"><b>Para onde vão as duas coisas que você vai copiar:</b> o site precisa do <b>endereço</b> do banco e da <b>chave</b> de leitura. As duas vêm prontas no Connect, numa cópia só. Você cola num bloco de notas agora e, na Peça 4, no cofre da Vercel.</div>
+      <div class="passo"><input type="checkbox" id="s4"><label for="s4">Botão <b>Connect</b> (no topo). Em <b>Framework</b>, deixe <b>Next.js</b>. Desça até a aba <b>.env.local</b>: lá estão as duas linhas prontas (<b>NEXT_PUBLIC_SUPABASE_URL</b> e <b>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</b>). Selecione as duas, copie e cole num bloco de notas</label></div>
+      <div class="passo"><input type="checkbox" id="s5"><label for="s5">Confira: a primeira linha termina em <b>.supabase.co</b> e a segunda começa com <b>sb_publishable_</b>. Faltou a chave? <b>Settings</b>, <b>API Keys</b>, copie a <b>Publishable</b> (print do plano B abaixo)</label></div>
+      <details class="tela"><summary>Como é a tela do Connect (print real)</summary><img src="/aula/img/d45152bf274751c09d31d61be94b697f.jpg" alt="Print do Connect do Supabase: 1 aba .env.local, 2 as duas linhas URL e PUBLISHABLE_KEY" loading="lazy"></details>
+      <details class="tela"><summary>Plano B: a chave em Settings, API Keys (print real)</summary><img src="/aula/img/c15b45bf7236f8e5286ad02ca29729de.jpg" alt="Print de Settings API Keys: 1 menu API Keys, 2 botão de copiar a chave Publishable" loading="lazy"></details>
+      <div class="check"><b>Deu certo quando</b>Aparece Success. Em Table Editor existem funcionarios, turnos, escalas, regras e configuracoes (funcionarios com 8 linhas). O bloco de notas tem as duas linhas preenchidas, prontas para a Vercel.</div>
+
+      <h3>Peça 4 · Vercel: criar a conta</h3>
+      <p class="muted">Já tem conta? Entre e pule para a publicação.</p>
+      <div class="aviso"><b>Deixe o seu e-mail aberto numa aba.</b> A Vercel pode mandar um código de confirmação, e o GitHub pode pedir para confirmar a instalação por e-mail.</div>
+      <div class="links" style="grid-template-columns:1fr">
+        <a href="https://vercel.com/signup" target="_blank" rel="noopener">Criar conta na Vercel<small>vercel.com/signup</small></a>
+      </div>
+      <div class="passo"><input type="checkbox" id="va1"><label for="va1">No botão acima: plano <b>Hobby</b>, o seu nome, <b>Continue</b></label></div>
+      <div class="passo"><input type="checkbox" id="va2"><label for="va2"><b>Continue with GitHub</b>. Se o GitHub perguntar, <b>Authorize Vercel</b></label></div>
+      <div class="check"><b>Deu certo quando</b>o painel da Vercel abre, com o seu nome no canto superior esquerdo e nenhum projeto ainda.</div>
+      <h3>Peça 4 · Vercel: publicar pela primeira vez</h3>
+      <div class="links" style="grid-template-columns:1fr">
+        <a href="https://vercel.com/new" target="_blank" rel="noopener">Importar o meu repositório na Vercel<small>vercel.com/new</small></a>
+      </div>
+      <div class="passo"><input type="checkbox" id="v1"><label for="v1">No botão acima abre a tela de novo projeto (ou, no painel da Vercel, <b>Add New</b>, <b>Project</b>)</label></div>
+      <div class="passo"><input type="checkbox" id="v1b"><label for="v1b">Primeira vez? A Vercel pede para ligar o GitHub: clique em <b>Install</b> (ou <b>Continue with GitHub</b>), escolha <b>All repositories</b> e confirme em <b>Install</b>. Se pedir código, ele chega no seu e-mail</label></div>
+      <div class="passo"><input type="checkbox" id="v2"><label for="v2">Encontre o seu repositório <b>escala-...</b> na lista e clique em <b>Import</b></label></div>
+      <div class="passo"><input type="checkbox" id="v3"><label for="v3">Abra <b>Environment Variables</b>. Copie do bloco de notas a primeira linha inteira (<b>NEXT_PUBLIC_SUPABASE_URL=...</b>) e cole no campo <b>Key</b>: a Vercel separa nome e valor sozinha. Dá para colar as duas linhas de uma vez</label></div>
+      <p class="muted">Nome antigo <b>NEXT_PUBLIC_SUPABASE_ANON_KEY</b> (dos slides e do pré-aula) também funciona: o sistema aceita os dois.</p>
+      <div class="passo"><input type="checkbox" id="v4"><label for="v4">Clique em <b>Create Project</b> (em algumas contas o botão se chama <b>Deploy</b>), espere 1 a 2 minutos e abra o link <b>escala-xxx.vercel.app</b></label></div>
+      <details class="tela"><summary>Como é a tela do Import (print real)</summary><img src="/aula/img/f7c38701b8f4bed23a4cabfe8493d714.jpg" alt="Print da Vercel Import Git Repository: 1 botão Import ao lado do escala-template" loading="lazy"></details>
+      <details class="tela"><summary>Como é a tela das variáveis (print real)</summary><img src="/aula/img/8502624eb71448c331592f5eef4bd1eb.jpg" alt="Print da Vercel New Project: 1 Environment Variables, 2 campo Key onde cola as duas linhas, 3 aviso or paste the .env contents, 4 Create Project" loading="lazy"></details>
+      <div class="check"><b>Deu certo quando</b>O link abre e mostra: "Banco conectado. 8 funcionários e 2 turnos cadastrados."</div>
+
+      <details class="socorro"><summary>Se algo der errado</summary>
+        <div class="aj-item"><p class="aj-tit">Erros comuns</p><p>Página do Supabase não abre ou os botões somem: tradução automática do navegador ligada. Ícone de tradução na barra de endereço, <b>Mostrar original</b>.</p><p>Projeto aparece como <b>Paused</b>: clique em <b>Restore project</b> e espere 1 a 2 minutos (projeto grátis pausa depois de 7 dias parado).</p><p>Copiou a chave <b>Secret</b>: hoje é a <b>Publishable</b>. Se o seu projeto mostrar a aba Legacy com a chave anon public, ela também serve.</p><p>Não acha o botão Connect: a URL também está em <b>Settings</b>, <b>Data API</b>.</p><p>"Variáveis não configuradas" e você copiou o template antes de hoje: renomeie a variável na Vercel para <b>NEXT_PUBLIC_SUPABASE_ANON_KEY</b> (mesmo valor) e faça <b>Redeploy</b>.</p></div>
+        <div class="aj-item"><p class="aj-tit">A Vercel ofereceu "Install Supabase"? Pode pular</p>
+        <p>Durante a importação, a Vercel pode sugerir ligar o Supabase por ela. Essa integração demora e, mesmo depois dela, as variáveis precisam ser coladas em <b>Environment Variables</b>. Por isso, na aula, o caminho é sempre o mesmo: <b>Cancel</b> nessa janela e cole as duas linhas do bloco de notas.</p>
+        <p class="muted">Já fez a integração? Tudo bem: escolha o projeto <b>escala</b>, termine, e mesmo assim confira e cole <b>NEXT_PUBLIC_SUPABASE_URL</b> e <b>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</b> antes do Create Project.</p>
+      </div>
+        <div class="aj-item"><p class="aj-tit">Erros comuns</p><p>Seu repositório não aparece na lista: clique em <b>Adjust GitHub App Permissions</b>, marque o <b>escala-...</b> e volte.</p><p>"Variáveis não configuradas": nome com espaço ou letra errada. Apague, cole de novo e clique em Redeploy.</p><p>"Tabelas não responderam": o SQL não rodou. Volte à Peça 3.</p></div>
+      </details>
+      <div class="fim-bloco">
+        <div class="travou"><b>Travou?</b> Nesta ordem:<ol><li>Pergunte ao <a href="https://api-ponto-demo.vercel.app/monitor" target="_blank" rel="noopener">monitor virtual</a> (botão no canto da tela), com o print do erro.</li><li>Peça para a dupla olhar a sua tela.</li><li>Levante a mão que o Carlos vai até você.</li></ol></div>
+        <button class="concluir" type="button">Concluí este bloco</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2. ENTREGA 1 ===================== -->
+  <section class="bloco" data-bloco="2">
+    <div class="cab"><div><span class="tag">Bloco 4 · Entrega 1</span><h2>A escala funcionando</h2></div><span class="selo-ok">Concluído ✓</span><span class="seta">›</span></div>
+    <div class="corpo">
+      <p class="muted">No Claude Code: <b>Nova sessão</b> (canto superior esquerdo), escolha o seu repositório em <b>Repositório</b>, cole o prompt na caixa de baixo e dê Enter. Hoje você troca só o <b>[nome do restaurante]</b>: turnos, funções e funcionários são os de exemplo, para toda a sala ver a mesma tela. O seu restaurante de verdade entra em casa: numa sessão nova, peça para trocar os turnos, funções e funcionários de exemplo pelos da sua ficha, com plano antes. O comando <b>/comecar</b> é para começar um repositório novo do zero.</p><details class="tela"><summary>Como é a tela do Claude Code (print real)</summary><img src="/aula/img/8f857148823daf43944c11368eb00cf2.png" alt="Print do Claude Code na web: 1 Nova sessão no canto superior esquerdo, 2 seletor Repositório com a lista para escolher o seu, 3 caixa de texto onde o prompt é colado, 4 modelo e esforço que não se mexe, 5 modo Automático" loading="lazy"></details><p class="muted">Dica: cole o prompt primeiro num bloco de notas, troque o que está entre colchetes, e só então cole no Claude Code.</p>
+      <div class="copiar"><pre>Antes de fazer qualquer coisa, me mostre um plano curto do que você vai construir e espere minha aprovação.
+
+Quero a primeira versão do sistema de escala do meu restaurante, usando as tabelas e os dados de exemplo que já existem no Supabase (veja supabase/schema.sql e o CLAUDE.md).
+
+Meu restaurante se chama [nome do restaurante]. Por enquanto, use os turnos (Almoço e Jantar), as funções e os funcionários de exemplo que já estão no banco: não apague, não renomeie e não crie turnos novos. Os dados do meu restaurante de verdade entram depois.
+
+Construa:
+1. Tela "Equipe": lista de funcionários com nome, função e telefone; adicionar, editar e desativar.
+2. Tela "Escala da semana": grade com os dias da semana nas colunas e os turnos nas linhas. Em cada célula, escolho quais funcionários trabalham. Botão para avançar e voltar semana.
+3. Tudo salvo no Supabase e funcionando bem no celular, com botões grandes e texto em português.
+
+Não adicione login nem funcionalidades além dessas. Quando terminar, faça commit e push direto para a branch main, sem abrir pull request.</pre><button class="bt" data-copiar>Copiar prompt 1</button></div>
+      <h3>Depois de colar</h3>
+      <div class="passo"><input type="checkbox" id="e1a"><label for="e1a">Leia o plano que a IA mostrar. Se estiver certo, responda: <b>pode fazer</b></label></div>
+      <div class="passo"><input type="checkbox" id="e1b"><label for="e1b">Espere de 3 a 8 minutos. Veja o commit chegar no GitHub e o deploy na Vercel</label></div>
+      <div class="passo"><input type="checkbox" id="e1c"><label for="e1c">No seu link, <b>Escala</b>, o mesmo cenário para toda a sala: <b>hoje, Almoço: Ana Souza, Bruno Lima, Carla Mendes e Diego Alves</b>; <b>hoje, Jantar: Ana e Bruno</b>. <b>Sábado, Jantar: Ana, Elaine e Gabriela</b> (salão), <b>Bruno e Diego</b> (cozinha). As Entregas 2 e 3 testam em cima disso</label></div>
+      <div class="passo"><input type="checkbox" id="e1e"><label for="e1e">Se der tempo: <b>Equipe</b>, cadastre 2 pessoas com nome fictício ou só o primeiro nome. Nada de CPF e telefone de verdade hoje: o app ainda não tem login e o link é aberto</label></div>
+      <div class="passo"><input type="checkbox" id="e1d"><label for="e1d">No Supabase, <b>Table Editor</b>, tabela <b>escalas</b>: as linhas da escala que você montou estão lá</label></div>
+      <div class="check"><b>Deu certo quando</b>Equipe e Escala funcionam no seu link e os dados aparecem no Supabase.</div>
+      <details class="socorro"><summary>Se algo der errado</summary>
+        <div class="aj-item"><p class="aj-tit">Erros comuns</p><p>A tela abre em branco: espere o deploy ficar verde na Vercel e recarregue.</p><p>A IA perguntou algo em vez de mostrar o plano: responda em uma frase e peça o plano de novo.</p><p>A IA terminou mas o site não mudou: ela salvou numa branch (versão paralela) em vez da main. No Claude Code, clique em <b>Create PR</b> no topo das mudanças (PR, pull request, é o pedido para juntar essa versão na main); no GitHub, <b>Merge pull request</b> e <b>Confirm merge</b> (aceitar o pedido). A Vercel publica em 1 a 2 minutos.</p><p>Quebrou de vez: levante a mão. A gente puxa a versão pronta (branch entrega-1) e você segue com a turma.</p></div>
+      </details>
+      <div class="fim-bloco">
+        <div class="travou"><b>Travou?</b> Nesta ordem:<ol><li>Pergunte ao <a href="https://api-ponto-demo.vercel.app/monitor" target="_blank" rel="noopener">monitor virtual</a> (botão no canto da tela), com o print do erro.</li><li>Peça para a dupla olhar a sua tela.</li><li>Levante a mão que o Carlos vai até você.</li></ol></div>
+        <button class="concluir" type="button">Concluí este bloco</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3. ENTREGA 2 ===================== -->
+  <section class="bloco" data-bloco="3">
+    <div class="cab"><div><span class="tag">Bloco 5 · Entrega 2</span><h2>Regras da casa e a sua marca</h2></div><span class="selo-ok">Concluído ✓</span><span class="seta">›</span></div>
+    <div class="corpo">
+      <h3>Prompt 2 · regras (sessão nova)</h3><p class="muted">As regras são as de exemplo, para o teste de tirar a Gabriela do sábado funcionar igual para todos. A linha 4 é opcional: uma regra sua, ou apague.</p>
+      <div class="copiar"><pre>Me mostre o plano antes e espere minha aprovação.
+
+Adicione regras da casa na Escala da semana, com alertas visuais na própria grade (célula em vermelho e um aviso curto). Hoje, para o teste, use estas regras de exemplo:
+
+1. Mínimo de pessoas por turno e função: no Jantar de sexta e sábado, 3 no Salão e 2 na Cozinha; nos demais turnos, 2 no Salão e 1 na Cozinha.
+2. Todo funcionário precisa de pelo menos 1 folga por semana.
+3. Ninguém pode fechar um dia (Jantar) e abrir o dia seguinte (Almoço).
+4. [Opcional: uma regra do seu restaurante, ex. "o João nunca fecha porque pega o último ônibus". Se não quiser, apague esta linha.]
+
+As regras devem ficar fáceis de mudar depois (num arquivo de configuração ou numa tela simples), porque as do meu restaurante são outras. Mostre um resumo no topo da grade: quantos alertas a semana tem. Mantenha tudo o que já funciona. Ao terminar, commit e push direto na branch main, sem pull request.</pre><button class="bt" data-copiar>Copiar prompt 2</button></div>
+
+      <h3>Prompt 3 · identidade visual (sessão nova)</h3>
+      <p class="muted">Sem logo em PNG no notebook? Pule o upload, apague a linha do logo no prompt e use só nome e cores. O logo pode entrar em casa.</p>
+      <h3>Subir o logo (antes de abrir a sessão nova)</h3>
+      <div class="passo"><input type="checkbox" id="lg1"><label for="lg1">No notebook, renomeie o arquivo do logo para <b>logo.png</b>. Só vale PNG: se o seu é JPG, pule o logo hoje (nome e cores bastam). No Windows, confira que não ficou logo.png.jpg</label></div>
+      <div class="passo"><input type="checkbox" id="lg2"><label for="lg2">No GitHub, no seu repositório, abra a pasta <b>public</b></label></div>
+      <div class="passo"><input type="checkbox" id="lg3"><label for="lg3"><b>Add file</b>, <b>Upload files</b>, arraste o logo.png</label></div>
+      <div class="passo"><input type="checkbox" id="lg4"><label for="lg4">Botão verde <b>Commit changes</b> no fim da página. Só depois abra a sessão nova no Claude Code</label></div>
+      <details class="extra"><summary>Opcional: referência visual do Dribbble</summary>
+      <div class="links" style="grid-template-columns:1fr">
+        <a href="https://dribbble.com/search/restaurant-app" target="_blank" rel="noopener">Buscar inspiração no Dribbble<small>dribbble.com/search/restaurant-app</small></a>
+      </div>
+      <div class="passo"><input type="checkbox" id="dr1"><label for="dr1">No botão acima, escolha um visual de app que combina com o seu restaurante e tire um <b>print</b> da tela (Windows: <b>Win+Shift+S</b>; Mac: <b>Cmd+Shift+4</b>)</label></div>
+      <div class="passo"><input type="checkbox" id="dr2"><label for="dr2">Na sessão nova do Claude Code, <b>anexe o print</b> (clipe ou Ctrl+V na caixa) junto com o Prompt 3 e escreva no fim: <b>Use o print anexado como referência de estilo.</b> A IA não abre links, por isso vai o print</label></div>
+      </details>
+      <div class="copiar"><pre>Me mostre o plano antes e espere minha aprovação.
+
+Aplique a identidade visual do meu restaurante em todo o app, sem mudar nenhuma funcionalidade:
+
+- Nome: [nome do restaurante]
+- Logo: está em public/logo.png [apague esta linha se não subiu logo]
+- Cor principal: [ex. #C0392B ou "vermelho escuro"]
+- Cor secundária: [ex. #F5E6D3 ou "bege claro"]
+- Estilo: [ex. moderno e limpo / rústico / divertido]
+
+Use a cor principal nos botões e cabeçalho, a secundária no fundo, e mantenha o texto bem legível. Coloque o logo e o nome no topo de todas as telas. Ao terminar, commit e push direto na branch main, sem pull request.</pre><button class="bt" data-copiar>Copiar prompt 3</button></div>
+      <h3>Teste</h3>
+      <div class="passo"><input type="checkbox" id="e2a"><label for="e2a">Na Escala, sábado, Jantar: tire a <b>Gabriela</b> do salão. A célula fica vermelha e o número de alertas no topo sobe 1. Os turnos ainda vazios da semana também aparecem em vermelho: é esperado</label></div>
+      <div class="passo"><input type="checkbox" id="e2b"><label for="e2b">Devolva a Gabriela: o alerta some</label></div>
+      <div class="passo"><input type="checkbox" id="e2c"><label for="e2c">Nome, logo e cores do seu restaurante aparecem em todas as telas</label></div>
+      <div class="check"><b>Deu certo quando</b>A grade avisa com as suas regras e o app está com a sua marca.</div>
+      <div class="fim-bloco">
+        <div class="travou"><b>Travou?</b> Nesta ordem:<ol><li>Pergunte ao <a href="https://api-ponto-demo.vercel.app/monitor" target="_blank" rel="noopener">monitor virtual</a> (botão no canto da tela), com o print do erro.</li><li>Peça para a dupla olhar a sua tela.</li><li>Levante a mão que o Carlos vai até você.</li></ol></div>
+        <button class="concluir" type="button">Concluí este bloco</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 4. ENTREGA 3 ===================== -->
+  <section class="bloco" data-bloco="4">
+    <div class="cab"><div><span class="tag">Bloco 6 · Entrega 3</span><h2>Integração com a API de ponto</h2></div><span class="selo-ok">Concluído ✓</span><span class="seta">›</span></div>
+    <div class="corpo">
+      <h3>A API de demonstração (Vila Tempero): endereço e três credenciais</h3>
+      <p class="muted">Como num fornecedor de verdade. Tudo fictício, só para a aula. Depois, em casa, você troca pelos valores do seu sistema de ponto.</p>
+      <p class="muted"><b>Endereço (URL):</b> onde a API mora.</p>
+      <div class="linha"><code id="api-url">https://api-ponto-demo.vercel.app</code><button class="bt" data-copiar-de="api-url">Copiar</button></div>
+      <p class="muted"><b>Client ID:</b> qual restaurante (a conta).</p>
+      <div class="linha"><code id="api-client">vila-tempero</code><button class="bt" data-copiar-de="api-client">Copiar</button></div>
+      <p class="muted"><b>API Key:</b> qual aplicativo está pedindo (identificação pública).</p>
+      <div class="linha"><code id="api-key">vt_key_aulao2026</code><button class="bt" data-copiar-de="api-key">Copiar</button></div>
+      <p class="muted"><b>API Secret:</b> a senha desse aplicativo. Fica só no servidor, nunca no navegador.</p>
+      <div class="linha"><code id="api-secret">vt_secret_7f3a9c2e</code><button class="bt" data-copiar-de="api-secret">Copiar</button></div>
+      <p class="muted">Dados fictícios de 8 funcionários. Todo dia aberto tem um atraso, uma falta e uma hora extra. Hoje (04/11): Ana atrasada, Diego faltou (está no almoço da escala, sem marcação), Carla com hora extra; Fábio e Henrique bateram ponto sem estar na escala.</p>
+
+      <h3>Prompt 4 · integração (sessão nova)</h3>
+      <div class="copiar"><pre>Me mostre o plano antes e espere minha aprovação.
+
+Crie uma tela "Conferência do dia" que compara a escala planejada com as marcações reais de ponto.
+
+As marcações vêm de uma API externa. A documentação está no arquivo docs/api-ponto.md do projeto. A URL base e as três credenciais (Client ID, API Key e API Secret) devem ficar em variáveis de ambiente (PONTO_API_URL, PONTO_CLIENT_ID, PONTO_API_KEY e PONTO_API_SECRET), nunca no código. Faça a chamada pelo lado do servidor, para o secret não aparecer no navegador.
+
+Na tela:
+1. Seletor de data (padrão: hoje).
+2. Para cada funcionário escalado no dia: horário planejado, horário real de entrada e saída, e uma situação: No horário (até 10 min de tolerância), Atrasado (com os minutos), Faltou (sem marcação), Hora extra (saiu mais de 30 min depois do planejado).
+3. Quem bateu ponto mas não estava na escala aparece numa lista separada "Não escalados".
+4. Resumo no topo: total de atrasos, faltas e horas extras do dia.
+5. No rodapé da tela, a fonte dos dados: "API de ponto" quando vieram da API, ou "dados de exemplo" quando a API não respondeu e você usou docs/marcacoes-exemplo.json.
+
+Para ligar o funcionário da API ao funcionário do meu sistema, use o campo CPF (adicione o campo CPF no cadastro se não existir).
+Se a API falhar, mostre uma mensagem clara em vez de quebrar a tela. Ao terminar, commit e push direto na branch main, sem pull request.</pre><button class="bt" data-copiar>Copiar prompt 4</button></div>
+
+      <h3>Enquanto a IA trabalha: as quatro variáveis na Vercel</h3>
+      <div class="passo"><input type="checkbox" id="e3a"><label for="e3a">Na Vercel, abra o projeto, <b>Settings</b>, <b>Environment Variables</b>. Atalho: cole no campo Key a linha inteira NOME=valor</label></div>
+      <div class="linha"><code>PONTO_API_URL=https://api-ponto-demo.vercel.app</code><button class="bt" data-copiar-texto="PONTO_API_URL=https://api-ponto-demo.vercel.app">Copiar</button></div>
+      <div class="linha"><code>PONTO_CLIENT_ID=vila-tempero</code><button class="bt" data-copiar-texto="PONTO_CLIENT_ID=vila-tempero">Copiar</button></div>
+      <div class="linha"><code>PONTO_API_KEY=vt_key_aulao2026</code><button class="bt" data-copiar-texto="PONTO_API_KEY=vt_key_aulao2026">Copiar</button></div>
+      <div class="linha"><code>PONTO_API_SECRET=vt_secret_7f3a9c2e</code><button class="bt" data-copiar-texto="PONTO_API_SECRET=vt_secret_7f3a9c2e">Copiar</button></div>
+      <div class="passo"><input type="checkbox" id="e3b"><label for="e3b">Salve as quatro. Se o deploy da IA já tinha terminado quando você salvou: <b>Deployments</b>, último, <b>Redeploy</b></label></div>
+      <details class="tela"><summary>Como é a tela (esquema, com os números dos passos)</summary><img src="/aula/img/7b6e1b0e15cf59623671ae79eb146ee9.png" alt="Esquema da Vercel: Settings, Environment Variables, as quatro variáveis, Redeploy" loading="lazy"></details>
+      <div class="passo"><input type="checkbox" id="e3d"><label for="e3d">No seu link: <b>Conferência</b>, data de hoje. Ana atrasada, Diego faltou, Carla com hora extra, Bruno no horário; Fábio e Henrique em "Não escalados"</label></div>
+      <div class="check"><b>Deu certo quando</b>A conferência mostra as situações e o rodapé diz "API de ponto", não "dados de exemplo".</div>
+      <details class="socorro"><summary>Se algo der errado</summary>
+        <div class="aj-item"><p class="aj-tit">Erros comuns</p><p>Rodapé diz "dados de exemplo" e o aviso cita uma credencial ("X-Api-Key inválida", "API Secret inválido"): essa variável foi colada errada. Corrija e faça Redeploy.</p><p>Rodapé diz "dados de exemplo" sem citar credencial: as variáveis não foram salvas ou faltou o Redeploy.</p><p>Todo mundo aparece como "Faltou": os funcionários escalados não têm CPF igual ao da API. Escale os de exemplo (Ana Souza, Bruno Lima, Carla Mendes).</p></div>
+      </details>
+      <div class="fim-bloco">
+        <div class="travou"><b>Travou?</b> Nesta ordem:<ol><li>Pergunte ao <a href="https://api-ponto-demo.vercel.app/monitor" target="_blank" rel="noopener">monitor virtual</a> (botão no canto da tela), com o print do erro.</li><li>Peça para a dupla olhar a sua tela.</li><li>Levante a mão que o Carlos vai até você.</li></ol></div>
+        <button class="concluir" type="button">Concluí este bloco</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5. REVISÃO E MATERIAL ===================== -->
+  <section class="bloco" data-bloco="5">
+    <div class="cab"><div><span class="tag">Bloco 7 · Revisão e material</span><h2>Revisar, proteger e continuar sozinho</h2></div><span class="selo-ok">Concluído ✓</span><span class="seta">›</span></div>
+    <div class="corpo">
+      <h3>Prompt 5 · revisão (sessão nova, todos juntos)</h3>
+      <div class="copiar"><pre>Revise todo o projeto e me responda em linguagem simples, sem termos técnicos, em no máximo 15 linhas:
+
+1. O que cada tela faz e onde os dados ficam guardados.
+2. Existe alguma senha, chave ou token escrito direto no código? Se sim, corrija movendo para variável de ambiente e me avise.
+3. Qualquer pessoa com o link consegue ver ou alterar a escala? O que eu precisaria pedir para proteger com login?
+4. Três melhorias que você sugere para a próxima versão, em ordem de importância.
+
+Não altere nada além do item 2.</pre><button class="bt" data-copiar>Copiar prompt 5</button></div>
+
+      <h3>Checagem de segurança (um comando, 1 minuto)</h3>
+      <p class="muted">O seu repositório já vem com um comando pronto que revisa a segurança do sistema e não muda nada sozinho: só aponta os riscos em linguagem simples e diz o que corrigir primeiro.</p>
+      <div class="passo"><input type="checkbox" id="sg1"><label for="sg1">No Claude Code, <b>Nova sessão</b> no seu escala-...</label></div>
+      <div class="passo"><input type="checkbox" id="sg2"><label for="sg2">Digite <b>/seguranca</b> e dê Enter</label></div>
+      <div class="linha"><code>/seguranca</code><button class="bt" data-copiar-texto="/seguranca">Copiar</button></div>
+      <div class="passo"><input type="checkbox" id="sg3"><label for="sg3">Leia a lista. Hoje é só olhar: as correções ficam para casa, um pedido por vez, sempre com plano antes</label></div>
+      <p class="muted">Se o comando não aparecer, o seu repositório é anterior a ele: cole o mesmo pedido, que está em <a href="https://github.com/CarlosKeiichi/escala-template/blob/main/.claude/commands/seguranca.md" target="_blank" rel="noopener">.claude/commands/seguranca.md</a> no template.</p>
+      <h3>Como continuar sozinho</h3>
+      <div class="passo"><input type="checkbox" id="f1"><label for="f1">Uma funcionalidade por mensagem. "Adicione X", não "adicione X, Y e Z"</label></div>
+      <div class="passo"><input type="checkbox" id="f2"><label for="f2">Sempre "me mostre o plano antes"</label></div>
+      <div class="passo"><input type="checkbox" id="f3"><label for="f3">Quebrou? Copie a mensagem de erro inteira e cole</label></div>
+      <p class="muted">Próximos pedidos, em ordem: login; mensagem da escala pronta para o WhatsApp da equipe; troca de turno com aprovação do gerente; API real do ponto; relatório mensal de atrasos e horas extras.</p>
+
+      <h3>Para casa</h3>
+      <details class="extra"><summary>Alternativas de infraestrutura (a lista completa prometida no mapa)</summary>
+      <p class="muted">Hoje: Vercel (grátis para aprender; Pro US$ 20 para uso comercial) e Supabase (grátis até 500 MB; Pro US$ 25). Para publicar o site: Netlify e Cloudflare Pages (parecidos com a Vercel), Railway, Render e Fly.io (rodam também coisas de fundo, pagos por uso). Para guardar dados: Neon (só banco Postgres), Firebase (Google, modelo diferente), PlanetScale (MySQL). Servidor próprio (VPS): Hostinger (em reais), Hetzner e DigitalOcean, com Coolify ou Dokploy por cima; só faz sentido com alguém técnico por perto.</p>
+      </details>
+      <details class="extra"><summary>O mapa dos problemas (para repetir com qualquer problema)</summary>
+      <p class="muted">Liste 3 tarefas do dia a dia que a IA poderia resolver. Para cada uma: quanto dói por semana (tempo, dinheiro, estresse) e quão fácil é resolver (o dado existe? a regra dá para escrever numa frase?).</p>
+      <div class="passo"><input type="checkbox" id="m1"><label for="m1"><b>Dói muito e é fácil: comece aqui.</b> Resolve hoje ou esta semana. A escala costuma cair aqui</label></div>
+      <div class="passo"><input type="checkbox" id="m2"><label for="m2"><b>Dói muito e é difícil: vale um projeto.</b> Planeje e quebre em partes</label></div>
+      <div class="passo"><input type="checkbox" id="m3"><label for="m3"><b>Dói pouco e é fácil: bônus rápido.</b> Faça quando sobrar tempo</label></div>
+      <div class="passo"><input type="checkbox" id="m4"><label for="m4"><b>Dói pouco e é difícil: deixe para lá.</b> Não vale o esforço agora</label></div>
+      <p class="muted">Depois de escolher, preencha a ficha da solução (Entrada, Regras, Saída, Quem usa) e só então peça para a IA, com plano antes.</p>
+
+      </details>
+      <details class="extra"><summary>Próximo passo: a IA dentro do seu sistema (API da Anthropic)</summary>
+      <p>Hoje a IA <b>construiu</b> o seu sistema. O próximo passo é a IA <b>trabalhar dentro</b> dele: um botão "sugerir a escala da semana" que olha as regras e a equipe e monta uma proposta, um resumo da conferência do ponto em uma frase, uma mensagem pronta para mandar no grupo da equipe. Isso usa a <b>API da Anthropic</b>, do mesmo jeito que você plugou a API de ponto: uma chave guardada no cofre da Vercel.</p>
+      <div class="links" style="grid-template-columns:1fr">
+        <a href="https://console.anthropic.com" target="_blank" rel="noopener">Criar a chave no Console da Anthropic<small>console.anthropic.com</small></a>
+      </div>
+      <div class="passo"><input type="checkbox" id="an1"><label for="an1">No Console, crie a conta e coloque créditos (é pago por uso, separado do Claude Pro; poucos dólares duram meses num restaurante)</label></div>
+      <div class="passo"><input type="checkbox" id="an2"><label for="an2"><b>Settings</b>, <b>API Keys</b>, <b>Create Key</b>. Copie a chave (começa com sk-ant-api) direto para a Vercel como <b>ANTHROPIC_API_KEY</b>. Nunca cole a chave no chat nem no código</label></div>
+      <div class="passo"><input type="checkbox" id="an3"><label for="an3">No Claude Code, sessão nova, peça com plano: "Crie um botão Sugerir escala na tela Escala que chama a API da Anthropic pelo servidor, com a chave ANTHROPIC_API_KEY, e propõe a escala da semana seguindo as regras da casa. Mostre a proposta para eu aprovar antes de salvar."</label></div>
+      <p class="muted">O monitor virtual desta aula foi feito exatamente assim.</p>
+      </details>
+      <details class="extra"><summary>Prompt 6 · trocar a API de demonstração pela do seu ponto (em casa)</summary>
+      <div class="copiar"><pre>Me mostre o plano antes e espere minha aprovação.
+
+Vou trocar a API de ponto de demonstração pela API real do meu fornecedor, que é o [Pontomais / Pontotel / outro]. A documentação está em [link ou arquivo docs/api-fornecedor.pdf que subi no projeto].
+
+Adapte somente a camada que busca funcionários e marcações (o adaptador de ponto em src/lib/integracoes), para que a tela Conferência do dia continue funcionando igual. Os nomes dos campos do fornecedor são diferentes dos nossos; faça a tradução dentro do adaptador. Continue lendo as credenciais de variáveis de ambiente (PONTO_API_URL, PONTO_CLIENT_ID, PONTO_API_KEY, PONTO_API_SECRET; renomeie ou remova as que o fornecedor não usa). Se a API do fornecedor exigir outra forma de autenticação, como trocar client ID e secret por um token temporário, faça isso dentro do adaptador e me explique em linguagem simples o que preciso configurar.</pre><button class="bt" data-copiar>Copiar prompt 6</button></div>
+      <details><summary>Como cada sistema de ponto se conecta</summary>
+        <p><b>Pontomais:</b> Marketplace, API Pontomais, contratar e copiar o Token público. Documentação pública.</p>
+        <p><b>Pontotel:</b> documentação pública da API v4.</p>
+        <p><b>Tangerino, Ahgora, Secullum e outros:</b> solicitar a API ao suporte ou gerente de conta.</p>
+        <p><b>Qualquer relógio homologado:</b> exportar o arquivo AFD e pedir ao Claude: "adicione importação de arquivo AFD".</p>
+        <p><b>Papel ou planilha:</b> pedir ao Claude: "adicione importação de planilha com nome, data, entrada e saída".</p>
+      </details>
+      </details>
+      <div class="fim-bloco">
+        <div class="travou"><b>Travou?</b> Nesta ordem:<ol><li>Pergunte ao <a href="https://api-ponto-demo.vercel.app/monitor" target="_blank" rel="noopener">monitor virtual</a> (botão no canto da tela), com o print do erro.</li><li>Peça para a dupla olhar a sua tela.</li><li>Levante a mão que o Carlos vai até você.</li></ol></div>
+        <button class="concluir" type="button">Concluí este bloco</button>
+      </div>
+    </div>
+  </section>
+
+    <div class="nav-blocos" style="display:flex"><button id="ant" type="button">← Anterior</button><button id="prox" type="button">Próximo →</button></div>
+</main>
+<a id="ajuda-bt" class="ajuda-bt" href="https://api-ponto-demo.vercel.app/monitor" target="_blank" rel="noopener">Dúvida? Pergunte ao monitor</a>
+
+<footer>
+  <div class="ftr">
+    <div class="txt"><b>Oficina de IA · Do problema à solução</b>Carlos Keiichi, CEO da Fogo Alto · <span id="versao">v31</span> · <button id="limpar">limpar meus marcados</button></div>
+    <div class="logos-ftr"><img src="/aula/img/daf18a9bbc1c160b9dd1c0b045f201a3.png" alt="Realização Abrasel 40 anos, Fogo Alto e ESBRE educação. Patrocínio Cielo."></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function ler(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function gravar(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  // ---------- blocos: abrir e fechar ----------
+  function salvarAbertos() { gravar("aula:abertos", $$("section.bloco.aberto").map(function (x) { return x.getAttribute("data-bloco"); }).join(",")); }
+  (function () {
+    var salvo = ler("aula:abertos");
+    if (salvo !== null) {
+      var lista = salvo ? salvo.split(",") : [];
+      $$("section.bloco").forEach(function (x) { x.classList.toggle("aberto", lista.indexOf(x.getAttribute("data-bloco")) >= 0); });
+    }
+  })();
+  $$("section.bloco > .cab").forEach(function (cab) {
+    cab.addEventListener("click", function () { if (document.body.classList.contains("modo-bloco")) return; cab.parentElement.classList.toggle("aberto"); salvarAbertos(); });
+  });
+
+  // ---------- checkboxes ----------
+  $$(".passo input[type=checkbox]").forEach(function (c) {
+    var k = "aula:" + c.id;
+    if (ler(k) === "1") { c.checked = true; c.parentElement.classList.add("feito"); }
+    c.addEventListener("change", function () {
+      c.parentElement.classList.toggle("feito", c.checked);
+      gravar(k, c.checked ? "1" : "0");
+    });
+  });
+  $("#limpar").addEventListener("click", function () {
+    $$(".passo input[type=checkbox]").forEach(function (c) { c.checked = false; c.parentElement.classList.remove("feito"); gravar("aula:" + c.id, "0"); });
+    $$("section.bloco").forEach(function (sec) { sec.classList.remove("concluido"); gravar("aula:concluido:" + sec.getAttribute("data-bloco"), "0"); var bt = $(".fim-bloco .concluir", sec); if (bt) bt.textContent = "Concluí este bloco"; });
+    document.dispatchEvent(new Event("change"));
+  });
+
+  // ---------- copiar ----------
+  function copiar(texto, botao) {
+    var feito = function () { var t = botao.textContent; botao.textContent = "Copiado"; botao.classList.add("ok"); setTimeout(function () { botao.textContent = t; botao.classList.remove("ok"); }, 1800); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto).then(feito, function () { copiarAntigo(texto); feito(); });
+    } else { copiarAntigo(texto); feito(); }
+  }
+  function copiarAntigo(texto) {
+    var ta = document.createElement("textarea"); ta.value = texto; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.left = "-9999px";
+    document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta);
+  }
+  $$("[data-copiar]").forEach(function (b) { b.addEventListener("click", function () { copiar($("pre", b.parentElement).textContent, b); }); });
+  $$("[data-copiar-texto]").forEach(function (b) { b.addEventListener("click", function () { copiar(b.getAttribute("data-copiar-texto"), b); }); });
+  $$("[data-copiar-de]").forEach(function (b) { b.addEventListener("click", function () { copiar($("#" + b.getAttribute("data-copiar-de")).textContent.trim(), b); }); });
+
+
+  function obrig(sec) { return $$(".passo input[type=checkbox]", sec).filter(function (c) { return !c.closest("details"); }); }
+  // ---------- bloco concluído ----------
+  $$("section.bloco").forEach(function (sec) {
+    var n = sec.getAttribute("data-bloco");
+    var k = "aula:concluido:" + n;
+    var bt = $(".fim-bloco .concluir", sec);
+    function aplicar(on) { sec.classList.toggle("concluido", on); if (bt) bt.textContent = on ? "Bloco concluído ✓ (toque para desfazer)" : "Concluí este bloco"; }
+    if (ler(k) === "1") aplicar(true);
+    if (bt) bt.addEventListener("click", function () { var on = !sec.classList.contains("concluido"); aplicar(on); gravar(k, on ? "1" : "0");  });
+    $$(".passo input[type=checkbox]", sec).forEach(function (c) {
+      c.addEventListener("change", function () {
+        var todos = obrig(sec);
+        if (todos.length && todos.every(function (x) { return x.checked; }) && !sec.classList.contains("concluido")) { aplicar(true); gravar(k, "1"); }
+      });
+    });
+  });
+
+
+  // ---------- linha do tempo ----------
+  (function () {
+    var secoes = $$("section.bloco");
+    var trilho = $("#lt-trilho");
+    if (!trilho || !secoes.length) return;
+    var ROT = ["Antes de tudo", "Supabase e Vercel", "Entrega 1", "Entrega 2", "Entrega 3", "Revisão"];
+    var bolas = secoes.map(function (sec, i) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "lt-passo";
+      b.innerHTML = '<span class="lt-bola"></span><span class="lt-rot"></span>';
+      $(".lt-bola", b).textContent = String(i + 1);
+      $(".lt-rot", b).textContent = ROT[i] || ("Bloco " + (i + 1));
+      b.addEventListener("click", function () { abrir(i); });
+      trilho.appendChild(b);
+      return b;
+    });
+    var atual = 0;
+    function estado() {
+      var total = 0, feitos = 0;
+      secoes.forEach(function (sec, i) {
+        var cx = obrig(sec), f = cx.filter(function (x) { return x.checked; }).length;
+        total += cx.length; feitos += f;
+        var ok = sec.classList.contains("concluido") || (cx.length && f === cx.length);
+        bolas[i].classList.toggle("feito", !!ok);
+        $(".lt-bola", bolas[i]).textContent = ok ? "✓" : String(i + 1);
+        bolas[i].classList.toggle("atual", i === atual);
+      });
+      $("#lt-barra").style.width = (total ? Math.round(100 * feitos / total) : 0) + "%";
+    }
+    function mostrar(rolar) {
+      secoes.forEach(function (sec, i) { sec.classList.toggle("atual", i === atual); });
+      $("#ant").disabled = atual <= 0; $("#prox").disabled = atual >= secoes.length - 1;
+      estado();
+      gravar("aula:bloco", String(atual));
+      if (rolar) { var t = $("#linha-tempo"); window.scrollTo({ top: t.offsetTop, behavior: "smooth" }); }
+    }
+    function abrir(i) { atual = i; try { history.replaceState(null, "", "#bloco-" + (i + 1)); } catch (e) {} mostrar(true); }
+    $("#ant").addEventListener("click", function () { if (atual > 0) abrir(atual - 1); });
+    $("#prox").addEventListener("click", function () { if (atual < secoes.length - 1) abrir(atual + 1); });
+    document.addEventListener("change", function (e) { if (e.target === document || (e.target && e.target.type === "checkbox")) estado(); });
+    document.addEventListener("click", function (e) { if (e.target && e.target.classList && e.target.classList.contains("concluir")) setTimeout(function () { estado(); if (secoes[atual].classList.contains("concluido") && atual < secoes.length - 1) abrir(atual + 1); }, 50); });
+    var m = /#bloco-(\d+)/.exec(location.hash);
+    var salvo = Number(ler("aula:bloco"));
+    atual = m ? Math.min(secoes.length - 1, Math.max(0, Number(m[1]) - 1)) : (salvo >= 0 && salvo < secoes.length ? salvo : 0);
+    mostrar(false);
+  })();
+})();
+</script>
+</body>
+</html>
